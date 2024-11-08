@@ -1,9 +1,9 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  // console.log("server:", import.meta.server);
-  // console.log("client:", import.meta.client);
+  if (["404NotFound", "index"].includes(to.name)) return;
+  if (to.name === "account") return navigateTo("/account/login");
   if (import.meta.client) {
     const token = localStorage.getItem("tk");
-    if (to.name === "account-login") return;
+    if (to.name.split("-")[0] === "account") return;
     if (!token) return navigateTo("/account/login");
   }
 });
