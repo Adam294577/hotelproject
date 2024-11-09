@@ -16,6 +16,7 @@
     "@vueuse/nuxt": "^11.2.0",
     "bootstrap": "^5.3.3",
     "nuxt": "^3.14.0",
+    "nuxt-swiper": "^1.2.2",
     "sass": "^1.77.6",
     "vue": "latest",
     "vue-router": "latest"
@@ -24,6 +25,7 @@
     "vue": "latest"
   },
   "devDependencies": {
+    "@iconify-json/bi": "^1.2.1",
     "@iconify-json/mdi": "^1.2.1",
     "@nuxt/icon": "^1.7.0"
   }
