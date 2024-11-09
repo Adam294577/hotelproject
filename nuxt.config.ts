@@ -9,6 +9,7 @@ export default defineNuxtConfig({
   modules: [
     // ...
     "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
     "@nuxt/icon",
     "@vueuse/nuxt",
     "nuxt-swiper",
