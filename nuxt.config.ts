@@ -17,4 +17,5 @@ export default defineNuxtConfig({
       scrollBehaviorType: "smooth",
     },
   },
+  plugins: ["~/plugins/bootstrap.client.js"],
 });
