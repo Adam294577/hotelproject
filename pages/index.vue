@@ -191,9 +191,9 @@
         <div
           class="d-flex flex-column flex-md-row justify-content-center align-items-center justify-content-md-start align-items-md-end gap-6 gap-md-20"
         >
-          <swiper
+          <Swiper
             ref="roomSwiper"
-            :modules="modules"
+            :modules="[SwiperAutoplay, SwiperNavigation, SwiperPagination]"
             :slides-per-view="1"
             :pagination="true"
             :autoplay="{
@@ -202,7 +202,7 @@
             }"
             :loop="true"
           >
-            <swiper-slide v-for="(num, index) in 5" :key="index">
+            <SwiperSlide v-for="(num, index) in 5" :key="index">
               <picture>
                 <source
                   srcset="@/assets/images/home-room-1.png"
@@ -214,8 +214,8 @@
                   alt="room-a"
                 />
               </picture>
-            </swiper-slide>
-          </swiper>
+            </SwiperSlide>
+          </Swiper>
 
           <div class="room-intro-content text-neutral-0">
             <h2 class="mb-2 mb-md-4 fw-bold">尊爵雙人房</h2>
