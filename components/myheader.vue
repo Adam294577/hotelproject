@@ -1,6 +1,7 @@
 <script setup>
-// header bg
 const route = useRoute();
+const router = useRouter();
+// header bg
 const transparentBgRoute = ["index", "rooms"];
 const isTransparentRoute = computed(() =>
   transparentBgRoute.includes(route.name)
@@ -13,6 +14,17 @@ useEventListener(document, "scroll", handleScroll);
 // collapse
 const collapseRef = ref(null);
 const menuOpen = ref(false);
+// user
+const userStore = useUserStore();
+const { userData } = storeToRefs(userStore);
+const IsLogin = computed(() => (!userData.value ? false : true));
+const handLogout = () => {
+  userData.value = null;
+  if (import.meta.client) {
+    localStorage.removeItem("tk");
+  }
+  router.push("/account/login");
+};
 </script>
 
 <template>
@@ -62,7 +74,7 @@ const menuOpen = ref(false);
                 客房旅宿
               </NuxtLink>
             </li>
-            <li class="d-none d-md-block nav-item">
+            <li v-if="userData" class="d-none d-md-block nav-item">
               <div class="btn-group">
                 <button
                   type="button"
@@ -70,7 +82,7 @@ const menuOpen = ref(false);
                   data-bs-toggle="dropdown"
                 >
                   <Icon class="fs-5" name="mdi:account-circle-outline" />
-                  Jessica
+                  {{ userData.name }}
                 </button>
                 <ul
                   class="dropdown-menu py-3 overflow-hidden"
@@ -80,15 +92,38 @@ const menuOpen = ref(false);
                     <a class="dropdown-item px-6 py-4" href="#">我的帳戶</a>
                   </li>
                   <li>
-                    <a class="dropdown-item px-6 py-4" href="#">登出</a>
+                    <a
+                      @click.prevent="handLogout"
+                      class="dropdown-item px-6 py-4"
+                      href="#"
+                      >登出</a
+                    >
                   </li>
                 </ul>
               </div>
             </li>
-            <li class="d-md-none nav-item">
+
+            <li v-if="userData" class="d-block d-md-none nav-item">
               <NuxtLink to="/" class="nav-link p-4 text-neutral-0">
-                會員登入
+                我的帳戶
               </NuxtLink>
+            </li>
+            <li v-if="userData" class="d-block d-md-none nav-item">
+              <a
+                @click.prevent="handLogout"
+                class="nav-link p-4 text-neutral-0"
+                href="#"
+                >登出</a
+              >
+            </li>
+
+            <li v-if="!userData" class="nav-item">
+              <a
+                @click.prevent="handLogout"
+                class="nav-link p-4 text-neutral-0"
+                href="#"
+                >會員登入</a
+              >
             </li>
             <li class="nav-item">
               <NuxtLink
