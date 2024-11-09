@@ -4,6 +4,7 @@ const { userData } = storeToRefs(userStore);
 </script>
 
 <template>
+  <Myheader />
   <main class="pt-18 pt-md-30 bg-neutral-120">
     <section class="position-relative">
       <picture>
@@ -69,6 +70,7 @@ const { userData } = storeToRefs(userStore);
       />
     </picture>
   </main>
+  <Myfooter />
 </template>
 
 <style lang="scss" scoped>
