@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxt/icon",
     "@vueuse/nuxt",
+    "nuxt-swiper",
   ],
   router: {
     options: {
