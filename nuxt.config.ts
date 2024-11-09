@@ -9,6 +9,8 @@ export default defineNuxtConfig({
   modules: [
     // ...
     "@pinia/nuxt",
+    "@nuxt/icon",
+    "@vueuse/nuxt",
   ],
   router: {
     options: {
