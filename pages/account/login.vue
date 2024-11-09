@@ -5,7 +5,7 @@ const { userData } = storeToRefs(userStore);
 
 const handLogin = () => {
   localStorage.setItem("tk", "123");
-  userData.value = { name: "Jessica" };
+  userData.value = { name: "Jessica", userId: "5207" };
   router.push("/");
 };
 const toSignup = () => {

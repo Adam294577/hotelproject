@@ -16,8 +16,8 @@ const collapseRef = ref(null);
 const menuOpen = ref(false);
 // user
 const userStore = useUserStore();
-const { userData } = storeToRefs(userStore);
-const IsLogin = computed(() => (!userData.value ? false : true));
+const { userData, IsLogin } = storeToRefs(userStore);
+
 const handLogout = () => {
   userData.value = null;
   if (import.meta.client) {
@@ -89,7 +89,12 @@ const handLogout = () => {
                   style="right: 0; left: auto; border-radius: 20px"
                 >
                   <li>
-                    <a class="dropdown-item px-6 py-4" href="#">我的帳戶</a>
+                    <a
+                      @click.prevent="userStore.ToProfile"
+                      class="dropdown-item px-6 py-4"
+                      href="#"
+                      >我的帳戶</a
+                    >
                   </li>
                   <li>
                     <a
@@ -104,9 +109,12 @@ const handLogout = () => {
             </li>
 
             <li v-if="userData" class="d-block d-md-none nav-item">
-              <NuxtLink to="/" class="nav-link p-4 text-neutral-0">
-                我的帳戶
-              </NuxtLink>
+              <a
+                @click.prevent="ToUserProfile"
+                class="nav-link p-4 text-neutral-0"
+                href="#"
+                >我的帳戶</a
+              >
             </li>
             <li v-if="userData" class="d-block d-md-none nav-item">
               <a

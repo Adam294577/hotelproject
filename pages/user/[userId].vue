@@ -1,8 +1,5 @@
-<script setup>
-const route = useRoute();
-</script>
+<script setup></script>
 <template>
-  <div>使用者ID:{{ route.params.userId }}</div>
   <NuxtPage />
 </template>
 
