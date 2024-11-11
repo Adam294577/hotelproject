@@ -10,28 +10,15 @@ const ToRoomBooking = (id) => {
 };
 
 const bookingPeople = ref(1);
-const MAX_BOOKING_PEOPLE = 10;
-
-const daysCount = ref(0);
-
-const daysFormatOnMobile = (date) => date?.split("-").slice(1, 3).join(" / ");
+const MAX_BOOKING_PEOPLE = ref(10);
 
 const currentDate = new Date();
-const currentDate2 = new Date("2024-11-27");
+const daysFormatOnMobile = (date) => date?.split("-").slice(1, 3).join(" / ");
 const formatDate = (date) => {
   const offsetToUTC8 = date.getHours() + 8;
   date.setHours(offsetToUTC8);
   return date.toISOString().split("T")[0];
 };
-const bookingDate = reactive({
-  date: {
-    start: formatDate(currentDate),
-    // end: null,
-    end: formatDate(currentDate2),
-  },
-  minDate: new Date(),
-  maxDate: new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)),
-});
 const handleDateChange = (bookingInfo) => {
   const { start, end } = bookingInfo.date;
   bookingDate.date.start = start;
@@ -40,6 +27,21 @@ const handleDateChange = (bookingInfo) => {
   bookingPeople.value = bookingInfo?.people || 1;
   daysCount.value = bookingInfo.daysCount;
 };
+// dateModel
+const datePickerModal = ref(null);
+const daysCount = ref(0);
+
+const openModal = () => {
+  datePickerModal.value.openModal();
+};
+const bookingDate = reactive({
+  date: {
+    start: formatDate(currentDate),
+    end: null,
+  },
+  minDate: new Date(),
+  maxDate: new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)),
+});
 </script>
 <template>
   <main
@@ -552,6 +554,11 @@ const handleDateChange = (bookingInfo) => {
         </template>
       </div>
     </section>
+    <DatePickerModal
+      ref="datePickerModal"
+      @handleDateChange="handleDateChange"
+      :date-time="bookingDate"
+    />
   </main>
   <NuxtPage />
 </template>
