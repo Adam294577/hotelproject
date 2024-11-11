@@ -1,4 +1,38 @@
 <script setup>
+// useDateOption
+import { useDateOption } from "@/composables/dateOption";
+const { yearOpt, monthOpt, dayOpt, updateDayOpt } = useDateOption();
+
+const birthDate = ref({
+  year: yearOpt.value[0],
+  month: monthOpt.value[0],
+  day: 1,
+});
+const formatBirthDate = () => {};
+const ChangeDate = () => {
+  updateDayOpt(birthDate.value.month, birthDate.value.year);
+  if (birthDate.value.day > dayOpt.value.length) birthDate.value.day = 1;
+};
+onMounted(() => {
+  ChangeDate();
+});
+
+const SignupModel = ref({
+  Step1: {
+    email: null,
+    pwd: null,
+    pwdAgain: null,
+  },
+  Step2: {
+    name: null,
+    phone: null,
+    birthDate: null,
+    address: null,
+    zip: null,
+    addressDetail: null,
+    Terms: null,
+  },
+});
 const isEmailAndPasswordValid = ref(false);
 </script>
 <template>
@@ -115,24 +149,29 @@ const isEmailAndPasswordValid = ref(false);
           <label class="mb-2 text-neutral-0 fw-bold" for="birth"> 生日 </label>
           <div class="d-flex gap-2">
             <select
+              @change="ChangeDate"
+              v-model="birthDate.year"
               id="birth"
               class="form-select p-4 text-neutral-80 fw-medium rounded-3"
             >
-              <option
-                v-for="year in 65"
-                :key="year"
-                value="`${year + 1958} 年`"
-              >
-                {{ year + 1958 }} 年
+              <option v-for="year in yearOpt" :key="year" :value="year">
+                {{ year }} 年
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
-              <option v-for="month in 12" :key="month" value="`${month} 月`">
+            <select
+              @change="ChangeDate"
+              v-model="birthDate.month"
+              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+            >
+              <option v-for="month in monthOpt" :key="month" :value="month">
                 {{ month }} 月
               </option>
             </select>
-            <select class="form-select p-4 text-neutral-80 fw-medium rounded-3">
-              <option v-for="day in 30" :key="day" value="`${day} 日`">
+            <select
+              v-model="birthDate.day"
+              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+            >
+              <option v-for="day in dayOpt" :key="day" :value="day">
                 {{ day }} 日
               </option>
             </select>
