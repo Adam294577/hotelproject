@@ -489,7 +489,7 @@ const confirmBooking = (bookingId = "HH2302183151222") => {
       </div>
     </section>
 
-    <!-- <BookingLoading v-if="isLoading" /> -->
+    <BookingLoading v-if="isLoading" />
   </main>
 </template>
 
