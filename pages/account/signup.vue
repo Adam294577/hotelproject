@@ -1,4 +1,5 @@
 <script setup>
+import FormField from "@/components/bootstrap/FormField.vue";
 // useDateOption
 import { useDateOption } from "@/composables/dateOption";
 const { yearOpt, monthOpt, dayOpt, updateDayOpt } = useDateOption();
@@ -33,6 +34,7 @@ const SignupModel = ref({
     Terms: null,
   },
 });
+const modelValue = ref(null);
 const isEmailAndPasswordValid = ref(false);
 </script>
 <template>
@@ -81,41 +83,47 @@ const isEmailAndPasswordValid = ref(false);
       </div>
     </div>
 
-    <div class="mb-4">
+    <div class="mb-4 row">
       <form :class="{ 'd-none': isEmailAndPasswordValid }" class="mb-4">
-        <div class="mb-4 fs-8 fs-md-7">
-          <label class="mb-2 text-neutral-0 fw-bold" for="email">
-            電子信箱
-          </label>
-          <input
-            id="email"
-            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-            placeholder="hello@exsample.com"
-            type="email"
-          />
-        </div>
-        <div class="mb-4 fs-8 fs-md-7">
-          <label class="mb-2 text-neutral-0 fw-bold" for="password">
-            密碼
-          </label>
-          <input
-            id="password"
-            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-            placeholder="請輸入密碼"
-            type="password"
-          />
-        </div>
-        <div class="mb-10 fs-8 fs-md-7">
-          <label class="mb-2 text-neutral-0 fw-bold" for="confirmPassword">
-            確認密碼
-          </label>
-          <input
-            id="confirmPassword"
-            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-            placeholder="請再輸入一次密碼"
-            type="password"
-          />
-        </div>
+        <FormField
+          :id="'email'"
+          :label="'電子信箱'"
+          :wrapperClass="'mb-4 fs-8 fs-md-7'"
+          :labelClass="'mb-2 text-neutral-0 fw-bold'"
+          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+          :type="'email'"
+          :placeholder="'hello@exsample.com'"
+          :status="''"
+          :feedback="''"
+          v-model="modelValue"
+        >
+        </FormField>
+        <FormField
+          :id="'password'"
+          :label="'密碼'"
+          :wrapperClass="'mb-4 fs-8 fs-md-7'"
+          :labelClass="'mb-2 text-neutral-0 fw-bold'"
+          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+          :type="'password'"
+          :placeholder="'請輸入密碼'"
+          :status="''"
+          :feedback="''"
+          v-model="modelValue"
+        >
+        </FormField>
+        <FormField
+          :id="'confirmPassword'"
+          :label="'確認密碼'"
+          :wrapperClass="'mb-10 fs-8 fs-md-7'"
+          :labelClass="'mb-2 text-neutral-0 fw-bold'"
+          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+          :type="'password'"
+          :placeholder="'請再輸入一次密碼'"
+          :status="''"
+          :feedback="''"
+          v-model="modelValue"
+        >
+        </FormField>
         <button
           class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold"
           type="button"
@@ -125,26 +133,32 @@ const isEmailAndPasswordValid = ref(false);
         </button>
       </form>
       <form :class="{ 'd-none': !isEmailAndPasswordValid }" class="mb-4">
-        <div class="mb-4 fs-8 fs-md-7">
-          <label class="mb-2 text-neutral-0 fw-bold" for="name"> 姓名 </label>
-          <input
-            id="name"
-            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40 rounded-3"
-            placeholder="請輸入姓名"
-            type="text"
-          />
-        </div>
-        <div class="mb-4 fs-8 fs-md-7">
-          <label class="mb-2 text-neutral-0 fw-bold" for="phone">
-            手機號碼
-          </label>
-          <input
-            id="phone"
-            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40 rounded-3"
-            placeholder="請輸入手機號碼"
-            type="tel"
-          />
-        </div>
+        <FormField
+          :id="'confirmPassword'"
+          :label="'姓名'"
+          :wrapperClass="'mb-4 fs-8 fs-md-7'"
+          :labelClass="'mb-2 text-neutral-0 fw-bold'"
+          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+          :type="'text'"
+          :placeholder="'請輸入姓名'"
+          :status="''"
+          :feedback="''"
+          v-model="modelValue"
+        >
+        </FormField>
+        <FormField
+          :id="'phone'"
+          :label="'手機號碼'"
+          :wrapperClass="'mb-4 fs-8 fs-md-7'"
+          :labelClass="'mb-2 text-neutral-0 fw-bold'"
+          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+          :type="'tel'"
+          :placeholder="'請輸入手機號碼'"
+          :status="''"
+          :feedback="''"
+          v-model="modelValue"
+        >
+        </FormField>
         <div class="mb-4 fs-8 fs-md-7">
           <label class="mb-2 text-neutral-0 fw-bold" for="birth"> 生日 </label>
           <div class="d-flex gap-2">
