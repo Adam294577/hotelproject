@@ -1,9 +1,25 @@
 <script setup>
 import FormField from "@/components/bootstrap/FormField.vue";
-// useDateOption
+// composables
 import { useDateOption } from "@/composables/dateOption";
-const { yearOpt, monthOpt, dayOpt, updateDayOpt } = useDateOption();
+import { useAddressOption } from "@/composables/addressOption";
 
+const SignupModel = ref({
+  // step1
+  email: null,
+  pwd: null,
+  pwdAgain: null,
+  // step2
+  name: null,
+  phone: null,
+  birthDate: null,
+  address: null,
+  zip: null,
+  addressDetail: null,
+  Terms: null,
+});
+// 日期處理
+const { yearOpt, monthOpt, dayOpt, updateDayOpt } = useDateOption();
 const birthDate = ref({
   year: yearOpt.value[0],
   month: monthOpt.value[0],
@@ -17,23 +33,14 @@ const ChangeDate = () => {
 onMounted(() => {
   ChangeDate();
 });
-
-const SignupModel = ref({
-  Step1: {
-    email: null,
-    pwd: null,
-    pwdAgain: null,
-  },
-  Step2: {
-    name: null,
-    phone: null,
-    birthDate: null,
-    address: null,
-    zip: null,
-    addressDetail: null,
-    Terms: null,
-  },
-});
+// 地址
+const { data: AddressData } = await useFetch("/api/zipcode");
+const { cityOpt, zoneOpt, updateZoneOpt } = useAddressOption(
+  AddressData.value,
+  SignupModel.value
+);
+const vaildateStep1 = () => {};
+const vaildateStep2 = () => {};
 const modelValue = ref(null);
 const isEmailAndPasswordValid = ref(false);
 </script>
@@ -198,18 +205,25 @@ const isEmailAndPasswordValid = ref(false);
           <div>
             <div class="d-flex gap-2 mb-2">
               <select
+                @change="updateZoneOpt"
+                v-model="SignupModel.address"
                 class="form-select p-4 text-neutral-80 fw-medium rounded-3"
               >
-                <option value="臺北市">臺北市</option>
-                <option value="臺中市">臺中市</option>
-                <option selected value="高雄市">高雄市</option>
+                <option v-for="list in cityOpt" :key="list" :value="list">
+                  {{ list }}
+                </option>
               </select>
               <select
+                v-model="SignupModel.zip"
                 class="form-select p-4 text-neutral-80 fw-medium rounded-3"
               >
-                <option value="前金區">前金區</option>
-                <option value="鹽埕區">鹽埕區</option>
-                <option selected value="新興區">新興區</option>
+                <option
+                  v-for="list in zoneOpt"
+                  :key="list.zip"
+                  :value="list.zip"
+                >
+                  {{ list.area }}
+                </option>
               </select>
             </div>
             <input
