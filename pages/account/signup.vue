@@ -3,12 +3,14 @@ import FormField from "@/components/bootstrap/FormField.vue";
 // composables
 import { useDateOption } from "@/composables/dateOption";
 import { useAddressOption } from "@/composables/addressOption";
+// zod
+import { z } from "zod";
 
 const SignupModel = ref({
   // step1
   email: null,
-  pwd: null,
-  pwdAgain: null,
+  password: null,
+  confirmPassword: null,
   // step2
   name: null,
   phone: null,
@@ -39,10 +41,46 @@ const { cityOpt, zoneOpt, updateZoneOpt } = useAddressOption(
   AddressData.value,
   SignupModel.value
 );
-const vaildateStep1 = () => {};
+// 註冊驗證 (step1)
+const isEmailAndPasswordValid = ref(false);
+const Step1Schema = z
+  .object({
+    email: z.string().email("請輸入有效的電子信箱"),
+    password: z
+      .string()
+      .min(8, "密碼至少需要8位數")
+      .regex(/^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{8,}$/, "密碼必須包含英數混合"),
+    confirmPassword: z.string().min(8, "確認密碼至少需要8位數"),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        path: ["confirmPassword"],
+        message: "確認密碼必須和密碼相同",
+      });
+    }
+  });
+const vaildateStep1 = () => {
+  const step1Data = {
+    email: SignupModel.value.email,
+    password: SignupModel.value.password,
+    confirmPassword: SignupModel.value.confirmPassword,
+  };
+  const result = Step1Schema.safeParse(step1Data);
+  if (!result.success) {
+    // 若有錯誤，取出錯誤訊息
+    console.log("驗證失敗：", result.error.format());
+    return result.error.format(); // 可以返回格式化的錯誤訊息
+  } else {
+    console.log("驗證通過！");
+    isEmailAndPasswordValid.value = true;
+    // return null; // 驗證通過則返回 null 或其他適當訊息
+  }
+};
+// 註冊驗證 (step2)
+const Step2Schema = z.object({});
 const vaildateStep2 = () => {};
 const modelValue = ref(null);
-const isEmailAndPasswordValid = ref(false);
 </script>
 <template>
   <div class="p-5 px-md-0 py-md-30" style="min-width: 400px">
@@ -102,7 +140,7 @@ const isEmailAndPasswordValid = ref(false);
           :placeholder="'hello@exsample.com'"
           :status="''"
           :feedback="''"
-          v-model="modelValue"
+          v-model="SignupModel.email"
         >
         </FormField>
         <FormField
@@ -115,7 +153,7 @@ const isEmailAndPasswordValid = ref(false);
           :placeholder="'請輸入密碼'"
           :status="''"
           :feedback="''"
-          v-model="modelValue"
+          v-model="SignupModel.password"
         >
         </FormField>
         <FormField
@@ -128,13 +166,13 @@ const isEmailAndPasswordValid = ref(false);
           :placeholder="'請再輸入一次密碼'"
           :status="''"
           :feedback="''"
-          v-model="modelValue"
+          v-model="SignupModel.confirmPassword"
         >
         </FormField>
         <button
           class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold"
           type="button"
-          @click="isEmailAndPasswordValid = true"
+          @click="vaildateStep1()"
         >
           下一步
         </button>
