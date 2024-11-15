@@ -3,13 +3,13 @@ const router = useRouter();
 const userStore = useUserStore();
 const { userData } = storeToRefs(userStore);
 
-const handLogin = () => {
+const handLogin = async () => {
   localStorage.setItem("tk", "123");
   userData.value = { name: "Jessica", userId: "5207" };
-  router.push("/");
+  await navigateTo("/");
 };
-const toSignup = () => {
-  router.push("/account/signup");
+const toSignup = async () => {
+  await navigateTo("/account/signup");
 };
 </script>
 

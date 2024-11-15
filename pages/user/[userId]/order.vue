@@ -1,7 +1,7 @@
 <script setup>
 const router = useRouter();
-const ToRoomDetail = (id) => {
-  router.push(`/rooms/${id}`);
+const ToRoomDetail = async (id) => {
+  await navigateTo(`/rooms/${id}`);
 };
 </script>
 <template>

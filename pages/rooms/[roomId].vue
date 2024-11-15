@@ -1,9 +1,9 @@
 <script setup>
 const route = useRoute();
 const router = useRouter();
-const ToRoomBooking = (id) => {
+const ToRoomBooking = async (id) => {
   if (bookingDate.date.start && bookingDate.date.end) {
-    router.push(`/rooms/${route.params.roomId}/booking`);
+    await navigateTo(`/rooms/${route.params.roomId}/booking`);
   } else {
     console.log("請選擇預定日期");
   }

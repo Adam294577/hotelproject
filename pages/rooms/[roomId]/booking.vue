@@ -8,9 +8,9 @@ const isLoading = ref(false);
 const confirmBooking = (bookingId = "HH2302183151222") => {
   isLoading.value = true;
 
-  setTimeout(() => {
+  setTimeout(async () => {
     isLoading.value = false;
-    router.push(`/booking/${bookingId}`, {
+    await navigateTo(`/booking/${bookingId}`, {
       params: {
         bookingId,
       },

@@ -1,7 +1,7 @@
 <script setup>
 const router = useRouter();
-const ToHome = () => {
-  router.push("/");
+const ToHome = async () => {
+  await navigateTo("/");
 };
 </script>
 <template>

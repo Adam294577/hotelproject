@@ -2,8 +2,8 @@
 // router
 const route = useRoute();
 const router = useRouter();
-const ToRoomDetail = (id) => {
-  router.push(`/rooms/${id}`, { params: { roomId: id } });
+const ToRoomDetail = async (id) => {
+  await navigateTo(`/rooms/${id}`, { params: { roomId: id } });
 };
 
 // import assets Images

@@ -6,16 +6,15 @@ export const useUserStore = defineStore(
     const userData = ref(null);
     const IsLogin = computed(() => (!userData.value ? false : true));
 
-    const router = useRouter();
-    const ToProfile = () => {
+    const ToProfile = async () => {
       if (userData.value?.userId) {
-        router.push(`/user/${userData.value.userId}/profile`);
+        await navigateTo(`/user/${userData.value.userId}/profile`);
       }
     };
 
-    const ToOrder = () => {
+    const ToOrder = async () => {
       if (userData.value?.userId) {
-        router.push(`/user/${userData.value.userId}/order`);
+        await navigateTo(`/user/${userData.value.userId}/order`);
       }
     };
     return {

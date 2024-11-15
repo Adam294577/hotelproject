@@ -18,12 +18,12 @@ const menuOpen = ref(false);
 const userStore = useUserStore();
 const { userData, IsLogin } = storeToRefs(userStore);
 
-const handLogout = () => {
+const handLogout = async () => {
   userData.value = null;
   if (import.meta.client) {
     localStorage.removeItem("tk");
   }
-  router.push("/account/login");
+  await navigateTo("/account/login");
 };
 </script>
 
