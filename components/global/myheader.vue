@@ -110,7 +110,7 @@ const handLogout = async () => {
 
             <li v-if="userData" class="d-block d-md-none nav-item">
               <a
-                @click.prevent="ToUserProfile"
+                @click.prevent="userStore.ToProfile"
                 class="nav-link p-4 text-neutral-0"
                 href="#"
                 >我的帳戶</a
