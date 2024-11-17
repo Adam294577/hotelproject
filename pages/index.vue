@@ -1,4 +1,5 @@
-<script setup>
+<!-- <script setup>
+let t1 = performance.now();
 const config = useRuntimeConfig();
 const { data: HomeImagesData } = await useFetch("/api/getHomeImages");
 // banner
@@ -32,6 +33,75 @@ culinaryData.value = mergeDataById(
 );
 // 交通方式
 const trafficData = ref(mergeDataByTitle(HomeImagesData.value.traffic));
+let t2 = performance.now();
+// ssr: 670 ~ 1100ms
+console.log(`api 執行時間: ${(t2 - t1).toFixed(2)} ms`);
+</script> -->
+<script setup>
+// let t1 = performance.now();
+const config = useRuntimeConfig();
+const HomeImagesData = ref(null);
+const bannerData = ref([]);
+const NewsData = ref([]);
+const roomsData = ref([]);
+const culinaryData = ref([]);
+const trafficData = ref([]);
+const initData = async () => {
+  const results = await Promise.allSettled([
+    useFetch("/api/getHomeImages"),
+    useFetch("/home/news/", {
+      ...config.public.backendOptions,
+      transform: (res) => res.result,
+    }),
+    useFetch("/home/culinary/", {
+      ...config.public.backendOptions,
+      transform: (res) => {
+        res.result = res.result.map((i) => {
+          i.diningWeek = i.diningTime.slice(0, 7);
+          i.diningTime = i.diningTime.slice(7);
+          return i;
+        });
+        return res.result;
+      },
+    }),
+  ]);
+
+  const [homeImagesResult, newsResult, culinaryResult] = results;
+  // handle HomeImagesData
+  if (homeImagesResult.status === "fulfilled") {
+    HomeImagesData.value = homeImagesResult.value.data.value;
+    bannerData.value = mergeDataByTitle(HomeImagesData.value.banner);
+    roomsData.value = mergeDataByTitle(HomeImagesData.value.rooms);
+    trafficData.value = mergeDataByTitle(HomeImagesData.value.traffic);
+  } else {
+    console.error("Failed to fetch HomeImagesData:", homeImagesResult.reason);
+  }
+
+  // handle NewsData
+  if (newsResult.status === "fulfilled" && HomeImagesData.value) {
+    NewsData.value = mergeDataById(
+      { sourceArray: HomeImagesData.value.news.pc },
+      { targetArray: newsResult.value.data.value }
+    );
+  } else {
+    console.error("Failed to fetch NewsData:", newsResult.reason);
+  }
+
+  // handle CulinaryData
+  if (culinaryResult.status === "fulfilled" && HomeImagesData.value) {
+    culinaryData.value = mergeDataById(
+      { sourceArray: HomeImagesData.value.culinary.pc },
+      { targetArray: culinaryResult.value.data.value }
+    );
+  } else {
+    console.error("Failed to fetch CulinaryData:", culinaryResult.reason);
+  }
+};
+
+await initData();
+// let t2 = performance.now();
+// ssr: 320 ~ 760ms
+// console.log(`api 執行時間: ${(t2 - t1).toFixed(2)} ms`);
 </script>
 
 <template>
