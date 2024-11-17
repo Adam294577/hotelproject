@@ -21,34 +21,34 @@ export default defineEventHandler(() => {
     news: {
       pc: [
         {
-          id: null,
+          id: "6739909cdffe5d5d41f8fcf2",
           title: "pc-秋季旅遊",
           url: "https://i.imgur.com/fd1vR7b.png",
         },
         {
-          id: null,
+          id: "673990eedffe5d5d41f8fcf5",
           title: "pc-輕鬆住房專案",
           url: "https://i.imgur.com/GrAIAQR.png",
         },
         {
-          id: null,
+          id: "67399129dffe5d5d41f8fcf8",
           title: "pc-耶誕快樂",
           url: "https://i.imgur.com/MoanaNn.png",
         },
       ],
       mobile: [
         {
-          id: null,
+          id: "6739909cdffe5d5d41f8fcf2",
           title: "mobile-秋季旅遊",
           url: "https://i.imgur.com/ikx5SuA.png",
         },
         {
-          id: null,
+          id: "673990eedffe5d5d41f8fcf5",
           title: "mobile-輕鬆住房專案",
           url: "https://i.imgur.com/LBLgrrw.png",
         },
         {
-          id: null,
+          id: "67399129dffe5d5d41f8fcf8",
           title: "mobile-耶誕快樂",
           url: "https://i.imgur.com/2e7uCyT.png",
         },
