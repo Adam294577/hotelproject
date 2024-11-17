@@ -1,4 +1,5 @@
-// https://api.imgur.com/endpoints/image
+// 用法: https://api.imgur.com/endpoints/image
+// 專案用途: 與後端要資料時 並無存取桌機版圖片 故需要 引用 第三方 api Imgur 拿圖片
 import { promises as fs } from "fs";
 import path from "path";
 
