@@ -2,7 +2,7 @@
 definePageMeta({
   middleware: "dev-only",
 });
-let loading = ref(false);
+const loading = ref(false);
 async function uploadImages() {
   if (loading.value) return;
   loading.value = true;
