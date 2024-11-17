@@ -1,15 +1,10 @@
 <script setup>
+const config = useRuntimeConfig();
 const { data: HomeImagesData } = await useFetch("/api/getHomeImages");
 // 最新消息
-const { data: NewsData } = await useFetch(
-  "https://freyja-2vgw.onrender.com/api/v1/admin/news/",
-  {
-    headers: {
-      Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzM4NzMxMWY2NjBjZWFkMmYyZWFjMGIiLCJpYXQiOjE3MzE4MjU3NzYsImV4cCI6MTczMjQzMDU3Nn0.uiW9HSTra1OH2OOn_Om7aiHjTjR9hUvrZChMNlh9Ves",
-    },
-  }
-);
+const { data: NewsData } = await useFetch("/home/news/", {
+  ...config.public.backendOptions,
+});
 NewsData.value.result = mergeDataById(
   { sourceArray: HomeImagesData.value.news.pc },
   { targetArray: NewsData.value.result }

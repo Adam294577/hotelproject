@@ -4,6 +4,14 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     imgurClientId: process.env.IMGUR_CLIENT_ID,
+    public: {
+      backendOptions: {
+        baseURL: "https://freyja-2vgw.onrender.com/api/v1",
+        headers: {
+          Authorization: "",
+        },
+      },
+    },
   },
   app: {
     head: {
