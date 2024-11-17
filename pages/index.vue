@@ -1,15 +1,37 @@
 <script setup>
 const config = useRuntimeConfig();
 const { data: HomeImagesData } = await useFetch("/api/getHomeImages");
+// banner
+const bannerData = ref(mergeDataByTitle(HomeImagesData.value.banner));
 // 最新消息
 const { data: NewsData } = await useFetch("/home/news/", {
   ...config.public.backendOptions,
+  transform: (res) => res.result,
 });
-NewsData.value.result = mergeDataById(
+NewsData.value = mergeDataById(
   { sourceArray: HomeImagesData.value.news.pc },
-  { targetArray: NewsData.value.result }
+  { targetArray: NewsData.value }
 );
-console.log(NewsData.value.result);
+// rooms
+const roomsData = ref(mergeDataByTitle(HomeImagesData.value.rooms));
+// 佳餚美饌
+const { data: culinaryData } = await useFetch("/home/culinary/", {
+  ...config.public.backendOptions,
+  transform: (res) => {
+    res.result = res.result.map((i) => {
+      i.diningWeek = i.diningTime.slice(0, 7);
+      i.diningTime = i.diningTime.slice(7);
+      return i;
+    });
+    return res.result;
+  },
+});
+culinaryData.value = mergeDataById(
+  { sourceArray: HomeImagesData.value.culinary.pc },
+  { targetArray: culinaryData.value }
+);
+// 交通方式
+const trafficData = ref(mergeDataByTitle(HomeImagesData.value.traffic));
 </script>
 
 <template>
@@ -26,17 +48,10 @@ console.log(NewsData.value.result);
             disableOnInteraction: false,
           }"
         >
-          <SwiperSlide v-for="(num, index) in 5" :key="index">
+          <SwiperSlide v-for="list in bannerData" :key="list.title">
             <picture>
-              <source
-                :srcset="HomeImagesData.banner.pc[0].url"
-                media="(min-width:576px)"
-              />
-              <img
-                class="hero-img"
-                :src="HomeImagesData.banner.mobile[0].url"
-                alt="hero banner"
-              />
+              <source :srcset="list.pcImage" media="(min-width:576px)" />
+              <img class="hero-img" :src="list.image" alt="hero banner" />
             </picture>
           </SwiperSlide>
         </Swiper>
@@ -86,7 +101,7 @@ console.log(NewsData.value.result);
             <div class="col-12 col-md-10 d-flex flex-column gap-10">
               <div
                 class="card bg-transparent border-0"
-                v-for="list in NewsData.result"
+                v-for="list in NewsData"
                 :key="list._id"
               >
                 <div
@@ -159,17 +174,10 @@ console.log(NewsData.value.result);
             }"
             :loop="true"
           >
-            <SwiperSlide v-for="(num, index) in 5" :key="index">
+            <SwiperSlide v-for="list in roomsData" :key="list.title">
               <picture>
-                <source
-                  :srcset="HomeImagesData.rooms.pc[0].url"
-                  media="(min-width:768px)"
-                />
-                <img
-                  class="w-100"
-                  :src="HomeImagesData.rooms.mobile[0].url"
-                  alt="room-a"
-                />
+                <source :srcset="list.pcImage" media="(min-width:768px)" />
+                <img class="w-100" :src="list.image" :alt="list.title" />
               </picture>
             </SwiperSlide>
           </Swiper>
@@ -224,17 +232,18 @@ console.log(NewsData.value.result);
             <div class="deco-line" />
           </div>
           <div class="row flex-nowrap overflow-x-auto">
-            <div class="col-10 col-md-6 col-xl-4">
+            <div
+              class="col-10 col-md-6 col-xl-4"
+              v-for="list in culinaryData"
+              :key="list._id"
+            >
               <div class="card position-relative border-0 rounded-3">
                 <picture>
-                  <source
-                    srcset="@/assets/images/home-food-1.png"
-                    media="(min-width: 576px)"
-                  />
+                  <source :srcset="list.pcImage" media="(min-width: 576px)" />
                   <img
                     class="w-100 rounded-3"
-                    src="@/assets/images/home-food-sm-1.png"
-                    alt="海霸"
+                    :src="list.image"
+                    :alt="list.title"
                   />
                 </picture>
                 <div
@@ -243,152 +252,16 @@ console.log(NewsData.value.result);
                   <div
                     class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
                   >
-                    <h5 class="card-title mb-0 fw-bold">海霸</h5>
+                    <h5 class="card-title mb-0 fw-bold">{{ list.title }}</h5>
                     <div
                       class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
                     >
-                      <span class="fw-bold">SUN-MON</span>
-                      <span class="fw-bold">11:00 - 20:30</span>
+                      <span class="fw-bold">{{ list.diningWeek }}</span>
+                      <span class="fw-bold">{{ list.diningTime }}</span>
                     </div>
                   </div>
                   <p class="card-text fs-8 fs-md-7">
-                    以新鮮海產料理聞名，我們的專業廚師選用高雄當地的海鮮，每一道菜都充滿海洋的鮮美與清甜。無論是烤魚、蒸蝦還是煮蛤蜊，都能讓您品嚐到最新鮮的海洋風味。
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-10 col-md-6 col-xl-4">
-              <div class="card position-relative border-0 rounded-3">
-                <picture>
-                  <source
-                    srcset="@/assets/images/home-food-2.png"
-                    media="(min-width: 576px)"
-                  />
-                  <img
-                    class="w-100 rounded-3"
-                    src="@/assets/images/home-food-sm-2.png"
-                    alt="日食"
-                  />
-                </picture>
-                <div
-                  class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
-                >
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
-                  >
-                    <h5 class="card-title mb-0 fw-bold">日食</h5>
-                    <div
-                      class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                    >
-                      <span class="fw-bold">SUN-MON</span>
-                      <span class="fw-bold">17:00 - 22:00</span>
-                    </div>
-                  </div>
-                  <p class="card-text fs-8 fs-md-7">
-                    為您提供優質的牛排，每一塊肉都來自頂級的牛肉，經過專業廚師的巧手烹調，口感豐滿、風味絕佳。搭配我們的特製醬料，讓您的味蕾享受一場美味的盛宴。
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-10 col-md-6 col-xl-4">
-              <div class="card position-relative border-0 rounded-3">
-                <picture>
-                  <source
-                    srcset="@/assets/images/home-food-3.png"
-                    media="(min-width: 576px)"
-                  />
-                  <img
-                    class="w-100 rounded-3"
-                    src="@/assets/images/home-food-sm-3.png"
-                    alt="山臻"
-                  />
-                </picture>
-                <div
-                  class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
-                >
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
-                  >
-                    <h5 class="card-title mb-0 fw-bold">山臻</h5>
-                    <div
-                      class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                    >
-                      <span class="fw-bold">SUN-MON</span>
-                      <span class="fw-bold">11:30 - 20:30</span>
-                    </div>
-                  </div>
-                  <p class="card-text fs-8 fs-md-7">
-                    帶您進入一次辣味與鮮香兼具的川菜美食之旅。我們的廚師掌握正宗的川菜烹調技巧，從麻辣鍋到口水雞，每一道菜都有其獨特的風味，讓您回味無窮。
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-10 col-md-6 col-xl-4">
-              <div class="card position-relative border-0 rounded-3">
-                <picture>
-                  <source
-                    srcset="@/assets/images/home-food-4.png"
-                    media="(min-width: 576px)"
-                  />
-                  <img
-                    class="w-100 rounded-3"
-                    src="@/assets/images/home-food-sm-4.png"
-                    alt="月永"
-                  />
-                </picture>
-                <div
-                  class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
-                >
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
-                  >
-                    <h5 class="card-title mb-0 fw-bold">月永</h5>
-                    <div
-                      class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                    >
-                      <span class="fw-bold">SUN-MON</span>
-                      <span class="fw-bold">11:00 - 20:00</span>
-                    </div>
-                  </div>
-                  <p class="card-text fs-8 fs-md-7">
-                    從鮮美的海鮮、經典的牛排，到各國的特色美食，我們都一應俱全。在這裡，您可以品嚐到世界各地的美食，每一道菜都由專業廚師用心製作，讓您在享受美食的同時，也能感受到我們的熱情與用心。
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-10 col-md-6 col-xl-4">
-              <div class="card position-relative border-0 rounded-3">
-                <picture>
-                  <source
-                    srcset="@/assets/images/home-food-5.png"
-                    media="(min-width: 576px)"
-                  />
-                  <img
-                    class="w-100 rounded-3"
-                    src="@/assets/images/home-food-sm-5.png"
-                    alt="天潮"
-                  />
-                </picture>
-                <div
-                  class="card-body position-absolute bottom-0 p-4 p-md-6 rounded-bottom-3 text-neutral-0"
-                >
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-4 mb-md-6"
-                  >
-                    <h5 class="card-title mb-0 fw-bold">天潮</h5>
-                    <div
-                      class="d-flex justify-content-between gap-4 text-neutral-40 fs-8 fs-md-7"
-                    >
-                      <span class="fw-bold">SUN-MON</span>
-                      <span class="fw-bold">14:00 - 19:30</span>
-                    </div>
-                  </div>
-                  <p class="card-text fs-8 fs-md-7">
-                    我們提供各種精緻甜點與糕點，無論您喜歡的是巧克力蛋糕、法式馬卡龍，還是台灣傳統的糕點，都能在這裡找到。讓我們的甜點帶您進入一場繽紛的甜蜜旅程。
+                    {{ list.description }}
                   </p>
                 </div>
               </div>
@@ -408,12 +281,12 @@ console.log(NewsData.value.result);
               <p class="text-neutral-40 fw-bold">台灣高雄市新興區六角路123號</p>
               <picture>
                 <source
-                  :srcset="HomeImagesData.traffic.pc[0].url"
+                  :srcset="trafficData[0].pcImage"
                   media="(min-width: 576px)"
                 />
                 <img
                   class="w-100"
-                  :src="HomeImagesData.traffic.mobile[0].url"
+                  :src="trafficData[0].image"
                   alt="描述地圖中酒店所在的位置"
                 />
               </picture>

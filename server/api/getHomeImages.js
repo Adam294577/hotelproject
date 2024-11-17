@@ -1,5 +1,5 @@
 // 專案用途: 與後端要資料時 並非所有圖片都有存取 故需要 引用 第三方 api Imgur 拿圖片
-// 若id有值 表示有對應後端手機版圖片 會搭配使用 utils/mergeDataById 擴充桌機版圖片
+// 若id有值 表示有對應後端的 '手機版'圖片  會搭配使用 utils/mergeDataById 擴充'桌機版'圖片
 export default defineEventHandler(() => {
   return {
     banner: {
@@ -72,35 +72,55 @@ export default defineEventHandler(() => {
     },
     culinary: {
       pc: [
-        { id: null, title: "pc-海霸", url: "https://i.imgur.com/RmUQObA.png" },
-        { id: null, title: "pc-日食", url: "https://i.imgur.com/DEWYIcw.png" },
-        { id: null, title: "pc-山臻", url: "https://i.imgur.com/Y5AKsAZ.png" },
-        { id: null, title: "pc-月永", url: "https://i.imgur.com/9dGz06f.png" },
-        { id: null, title: "pc-天潮", url: "https://i.imgur.com/dPWjLoo.png" },
+        {
+          id: "6739bf4089088fa6fbd868ff",
+          title: "pc-海霸",
+          url: "https://i.imgur.com/RmUQObA.png",
+        },
+        {
+          id: "6739bf6f89088fa6fbd86902",
+          title: "pc-日食",
+          url: "https://i.imgur.com/DEWYIcw.png",
+        },
+        {
+          id: "6739bfa989088fa6fbd86905",
+          title: "pc-山臻",
+          url: "https://i.imgur.com/Y5AKsAZ.png",
+        },
+        {
+          id: "6739c02989088fa6fbd86908",
+          title: "pc-月永",
+          url: "https://i.imgur.com/9dGz06f.png",
+        },
+        {
+          id: "6739c05689088fa6fbd8690b",
+          title: "pc-天潮",
+          url: "https://i.imgur.com/dPWjLoo.png",
+        },
       ],
       mobile: [
         {
-          id: null,
+          id: "6739bf4089088fa6fbd868ff",
           title: "mobile-海霸",
           url: "https://i.imgur.com/yJ6E4TB.png",
         },
         {
-          id: null,
+          id: "6739bf6f89088fa6fbd86902",
           title: "mobile-日食",
           url: "https://i.imgur.com/ZDdki9u.png",
         },
         {
-          id: null,
+          id: "6739bfa989088fa6fbd86905",
           title: "mobile-山臻",
           url: "https://i.imgur.com/R2AdL6C.png",
         },
         {
-          id: null,
+          id: "6739c02989088fa6fbd86908",
           title: "mobile-月永",
           url: "https://i.imgur.com/od4RtXn.png",
         },
         {
-          id: null,
+          id: "6739c05689088fa6fbd8690b",
           title: "mobile-天潮",
           url: "https://i.imgur.com/77fjgGA.png",
         },

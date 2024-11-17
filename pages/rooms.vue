@@ -61,12 +61,12 @@ onMounted(async () => {
         <SwiperSlide v-for="(num, index) in 5" :key="index">
           <picture>
             <source
-              srcset="@/assets/images/home-hero.png"
+              srcset="@/assets/images/room-hero.png"
               media="(min-width:576px)"
             />
             <img
               class="hero-img"
-              src="@/assets/images/home-hero-sm.png"
+              src="@/assets/images/room-hero-sm.png"
               alt="hero banner"
             />
           </picture>
