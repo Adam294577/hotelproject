@@ -15,8 +15,8 @@ export function mergeDataById<
   U extends Record<string, any>,
   K extends keyof T & keyof U
 >(sourceData: SourceData<T>, targetData: TargetData<U>): U[] {
-  const { sourceArray, sourceKey, pickKey = "pcImage" } = sourceData;
-  const { targetArray, targetKey, newKey = pickKey } = targetData;
+  const { sourceArray, sourceKey, pickKey = "url" } = sourceData;
+  const { targetArray, targetKey, newKey = "pcImage" } = targetData;
 
   // 建立 Map 快速查找
   const sourceMap = new Map<unknown, T>(

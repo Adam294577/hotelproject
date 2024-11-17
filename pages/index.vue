@@ -1,4 +1,7 @@
-<script></script>
+<script setup>
+const { data: HomeImagesData } = await useFetch("/api/getHomeImages");
+console.log("HomeImagesData", HomeImagesData.value);
+</script>
 
 <template>
   <div>
@@ -17,12 +20,12 @@
           <SwiperSlide v-for="(num, index) in 5" :key="index">
             <picture>
               <source
-                srcset="@/assets/images/home-hero.png"
+                :srcset="HomeImagesData.banner.pc[0].url"
                 media="(min-width:576px)"
               />
               <img
                 class="hero-img"
-                src="@/assets/images/home-hero-sm.png"
+                :src="HomeImagesData.banner.mobile[0].url"
                 alt="hero banner"
               />
             </picture>
@@ -205,12 +208,12 @@
             <SwiperSlide v-for="(num, index) in 5" :key="index">
               <picture>
                 <source
-                  srcset="@/assets/images/home-room-1.png"
+                  :srcset="HomeImagesData.rooms.pc[0].url"
                   media="(min-width:768px)"
                 />
                 <img
                   class="w-100"
-                  src="@/assets/images/home-room-sm-1.png"
+                  :src="HomeImagesData.rooms.mobile[0].url"
                   alt="room-a"
                 />
               </picture>
@@ -451,12 +454,12 @@
               <p class="text-neutral-40 fw-bold">台灣高雄市新興區六角路123號</p>
               <picture>
                 <source
-                  srcset="@/assets/images/home-map.png"
+                  :srcset="HomeImagesData.traffic.pc[0].url"
                   media="(min-width: 576px)"
                 />
                 <img
                   class="w-100"
-                  src="@/assets/images/home-map-sm.png"
+                  :src="HomeImagesData.traffic.mobile[0].url"
                   alt="描述地圖中酒店所在的位置"
                 />
               </picture>
