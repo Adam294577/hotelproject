@@ -1,6 +1,8 @@
-<script setup lang="ts">
+<script setup>
 const userStore = useUserStore();
 const { userData } = storeToRefs(userStore);
+const route = useRoute();
+const linkActive = computed(() => route.path.split("/"));
 </script>
 
 <template>
@@ -36,7 +38,7 @@ const { userData } = storeToRefs(userStore);
             <a
               href="#"
               @click.prevent="userStore.ToProfile"
-              exact-active-class="text-primary-100"
+              :class="{ 'text-primary-100': linkActive.includes('profile') }"
               class="nav-link px-6 py-4 text-white"
             >
               個人資料
@@ -45,8 +47,8 @@ const { userData } = storeToRefs(userStore);
           <li class="nav-item position-relative">
             <a
               href="#"
+              :class="{ 'text-primary-100': linkActive.includes('order') }"
               @click.prevent="userStore.ToOrder"
-              exact-active-class="text-primary-100"
               class="nav-link px-6 py-4 text-white"
             >
               我的訂單

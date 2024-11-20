@@ -4,6 +4,7 @@ const userStore = useUserStore();
 const { userData } = storeToRefs(userStore);
 </script>
 <template>
+  <Myheader />
   <main class="overflow-hidden pt-18 pt-md-30 bg-neutral-120">
     <div class="container py-10 py-md-30">
       <div class="row gap-15 gap-md-0">
@@ -285,6 +286,7 @@ const { userData } = storeToRefs(userStore);
       />
     </picture>
   </main>
+  <Myfooter />
 </template>
 
 <style lang="scss" scoped>
