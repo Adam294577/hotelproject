@@ -4,6 +4,7 @@ export const useUserStore = defineStore(
   "UserStore",
   () => {
     const userData = ref(null);
+    const successLoginPath = ref("");
     const IsLogin = computed(() => (!userData.value ? false : true));
 
     const ToProfile = async () => {
@@ -20,6 +21,7 @@ export const useUserStore = defineStore(
     return {
       userData,
       IsLogin,
+      successLoginPath,
       ToProfile,
       ToOrder,
     };

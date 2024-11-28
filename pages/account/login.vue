@@ -4,7 +4,7 @@ const userStore = useUserStore();
 const { userData } = storeToRefs(userStore);
 
 const handLogin = async () => {
-  localStorage.setItem("tk", "123");
+  setAuthorization("123");
   userData.value = { name: "Jessica", userId: "5207" };
   await navigateTo("/");
 };
