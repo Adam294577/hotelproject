@@ -1,44 +1,4 @@
-<!-- <script setup>
-let t1 = performance.now();
-const config = useRuntimeConfig();
-const { data: HomeImagesData } = await useFetch("/api/getHomeImages");
-// banner
-const bannerData = ref(mergeDataByTitle(HomeImagesData.value.banner));
-// 最新消息
-const { data: NewsData } = await useFetch("/home/news/", {
-  ...config.public.backendOptions,
-  transform: (res) => res.result,
-});
-NewsData.value = mergeDataById(
-  { sourceArray: HomeImagesData.value.news.pc },
-  { targetArray: NewsData.value }
-);
-// rooms
-const roomsData = ref(mergeDataByTitle(HomeImagesData.value.rooms));
-// 佳餚美饌
-const { data: culinaryData } = await useFetch("/home/culinary/", {
-  ...config.public.backendOptions,
-  transform: (res) => {
-    res.result = res.result.map((i) => {
-      i.diningWeek = i.diningTime.slice(0, 7);
-      i.diningTime = i.diningTime.slice(7);
-      return i;
-    });
-    return res.result;
-  },
-});
-culinaryData.value = mergeDataById(
-  { sourceArray: HomeImagesData.value.culinary.pc },
-  { targetArray: culinaryData.value }
-);
-// 交通方式
-const trafficData = ref(mergeDataByTitle(HomeImagesData.value.traffic));
-let t2 = performance.now();
-// ssr: 670 ~ 1100ms
-console.log(`api 執行時間: ${(t2 - t1).toFixed(2)} ms`);
-</script> -->
 <script setup>
-// let t1 = performance.now();
 const config = useRuntimeConfig();
 const HomeImagesData = ref(null);
 const bannerData = ref([]);
@@ -46,6 +6,8 @@ const NewsData = ref([]);
 const roomsData = ref([]);
 const culinaryData = ref([]);
 const trafficData = ref([]);
+const roomsImageData = ref([]);
+const roomIntro = ref({});
 const initData = async () => {
   const results = await Promise.allSettled([
     useFetch("/api/getHomeImages"),
@@ -64,17 +26,38 @@ const initData = async () => {
         return res.result;
       },
     }),
+    useFetch("/api/getRoomsImages"),
+    useFetch("/rooms", {
+      ...config.public.backendOptions,
+      transform: (res) => res.result,
+    }),
   ]);
 
-  const [homeImagesResult, newsResult, culinaryResult] = results;
+  const [
+    homeImagesResult,
+    newsResult,
+    culinaryResult,
+    roomsImagesResult,
+    roomsResult,
+  ] = results;
   // handle HomeImagesData
   if (homeImagesResult.status === "fulfilled") {
     HomeImagesData.value = homeImagesResult.value.data.value;
     bannerData.value = mergeDataByTitle(HomeImagesData.value.banner);
-    roomsData.value = mergeDataByTitle(HomeImagesData.value.rooms);
     trafficData.value = mergeDataByTitle(HomeImagesData.value.traffic);
   } else {
     console.error("Failed to fetch HomeImagesData:", homeImagesResult.reason);
+  }
+  // handle roomsImagesData
+  if (roomsResult.status === "fulfilled" && roomsImagesResult.value) {
+    roomsImageData.value = roomsImagesResult.value.data.value;
+    roomsData.value = mergeDataById(
+      { sourceArray: roomsImageData.value.pc, pickKey: "imageUrlList" },
+      { targetArray: roomsResult.value.data.value, newKey: "pcImageUrlList" }
+    );
+    roomIntro.value = roomsData.value[0];
+  } else {
+    console.error("Failed to fetch roomsImagesData:", homeImagesResult.reason);
   }
 
   // handle NewsData
@@ -97,11 +80,18 @@ const initData = async () => {
     console.error("Failed to fetch CulinaryData:", culinaryResult.reason);
   }
 };
-
 await initData();
-// let t2 = performance.now();
-// ssr: 320 ~ 760ms
-// console.log(`api 執行時間: ${(t2 - t1).toFixed(2)} ms`);
+// swiper
+const roomSwiper = ref(null);
+const roomsSwiperItem = ref([]);
+const onSwiper = (swiper) => {
+  roomSwiper.value = swiper;
+};
+const onSlideChange = () => {
+  const realIndex = roomSwiper.value.realIndex;
+  const roomid = roomsSwiperItem.value[realIndex].$el.dataset.roomid;
+  roomIntro.value = roomsData.value.find((item) => item._id === roomid);
+};
 </script>
 
 <template>
@@ -234,7 +224,7 @@ await initData();
           class="d-flex flex-column flex-md-row justify-content-center align-items-center justify-content-md-start align-items-md-end gap-6 gap-md-20"
         >
           <Swiper
-            ref="roomSwiper"
+            @swiper="onSwiper"
             :modules="[SwiperAutoplay, SwiperNavigation, SwiperPagination]"
             :slides-per-view="1"
             :pagination="true"
@@ -243,21 +233,36 @@ await initData();
               disableOnInteraction: false,
             }"
             :loop="true"
+            @slideChange="onSlideChange"
           >
-            <SwiperSlide v-for="list in roomsData" :key="list.title">
+            <SwiperSlide
+              :ref="
+                (el) => {
+                  roomsSwiperItem.push(el);
+                }
+              "
+              v-for="list in roomsData"
+              :key="list._id"
+              :data-roomId="list._id"
+            >
               <picture>
-                <source :srcset="list.pcImage" media="(min-width:768px)" />
-                <img class="w-100" :src="list.image" :alt="list.title" />
+                <source
+                  :srcset="list.pcImageUrlList[0]"
+                  media="(min-width:768px)"
+                />
+                <img class="w-100" :src="list.imageUrl" :alt="list.name" />
               </picture>
             </SwiperSlide>
           </Swiper>
 
           <div class="room-intro-content text-neutral-0">
-            <h2 class="mb-2 mb-md-4 fw-bold">尊爵雙人房</h2>
+            <h2 class="mb-2 mb-md-4 fw-bold">{{ roomIntro?.name }}</h2>
             <p class="mb-6 mb-md-10 fs-8 fs-md-7">
-              享受高級的住宿體驗，尊爵雙人房提供給您舒適寬敞的空間和精緻的裝潢。
+              {{ roomIntro?.description }}
             </p>
-            <div class="mb-6 mb-md-10 fs-3 fw-bold">NT$ 10,000</div>
+            <div class="mb-6 mb-md-10 fs-3 fw-bold">
+              {{ formatMoney(roomIntro?.price) }}
+            </div>
             <NuxtLink
               to="/rooms"
               class="btn btn-neutral-0 d-flex justify-content-end align-items-center gap-3 w-100 p-5 p-md-10 mb-6 mb-md-10 text-end text-neutral-100 fs-7 fs-md-5 fw-bold border-0"
@@ -269,7 +274,7 @@ await initData();
               <button
                 class="bg-transparent text-primary-100 icon-link icon-link-hover border-0"
                 type="button"
-                @click="slidePrev"
+                @click="roomSwiper.slidePrev()"
               >
                 <Icon
                   name="mdi:arrow-left"
@@ -283,7 +288,7 @@ await initData();
               <button
                 class="bg-transparent text-primary-100 icon-link icon-link-hover border-0"
                 type="button"
-                @click="slideNext"
+                @click="roomSwiper.slideNext()"
               >
                 <Icon
                   name="mdi:arrow-right"
