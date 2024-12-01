@@ -11,15 +11,32 @@ export const useUserStore = defineStore(
     const IsLogin = computed(() => (!userData.value ? false : true));
 
     const ToProfile = async () => {
-      if (userData.value?.userId) {
-        await navigateTo(`/user/${userData.value.userId}/profile`);
+      if (userData.value?._id) {
+        await navigateTo(`/user/${userData.value._id}/profile`);
       }
     };
 
     const ToOrder = async () => {
-      if (userData.value?.userId) {
-        await navigateTo(`/user/${userData.value.userId}/order`);
+      if (userData.value?._id) {
+        await navigateTo(`/user/${userData.value._id}/order`);
       }
+    };
+    const logout = async (route) => {
+      const userToken = useCookie("userToken");
+      userData.value = null;
+      userToken.value = null;
+      const noNavigate = [
+        "rooms-roomId-booking",
+        "user-userId-profile",
+        "user-userId-order",
+      ];
+      if (!noNavigate.includes(route.name)) {
+        successLoginPath.value = route.fullPath;
+      } else {
+        successLoginPath.value = "/";
+      }
+      setAuthorization("");
+      await navigateTo("/account/login");
     };
     return {
       RememberedAccount,
@@ -29,6 +46,7 @@ export const useUserStore = defineStore(
       successLoginPath,
       ToProfile,
       ToOrder,
+      logout,
     };
   },
   {

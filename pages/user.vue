@@ -3,6 +3,9 @@ const userStore = useUserStore();
 const { userData } = storeToRefs(userStore);
 const route = useRoute();
 const linkActive = computed(() => route.path.split("/"));
+onMounted(() => {
+  if (route.params.userId !== userData.value._id) userStore.logout(route);
+});
 </script>
 
 <template>

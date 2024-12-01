@@ -16,19 +16,8 @@ const collapseRef = ref(null);
 const menuOpen = ref(false);
 // user
 const userStore = useUserStore();
-const userToken = useCookie("userToken");
-
 const handLogout = async () => {
-  userStore.userData = null;
-  userToken.value = null;
-  const noNavigate = ["rooms-roomId-booking"];
-  if (!noNavigate.includes(route.name)) {
-    userStore.successLoginPath = route.fullPath;
-  } else {
-    userStore.successLoginPath = "/";
-  }
-  setAuthorization("");
-  await navigateTo("/account/login");
+  userStore.logout(route);
 };
 </script>
 
