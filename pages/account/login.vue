@@ -29,8 +29,16 @@ const handLogin = async () => {
     if (userStore.isRemembered) {
       userStore.RememberedAccount = res.data.result.email;
     }
+    const userToken = useCookie("userToken", {
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    userToken.value = res.data.token;
     setAuthorization(res.data.token);
-    navigateTo("/");
+    if (userStore.successLoginPath) {
+      navigateTo(userStore.successLoginPath);
+    } else {
+      navigateTo("/");
+    }
   }
 };
 const LoginSchema = z.object({

@@ -16,13 +16,18 @@ const collapseRef = ref(null);
 const menuOpen = ref(false);
 // user
 const userStore = useUserStore();
-const { userData, IsLogin } = storeToRefs(userStore);
+const userToken = useCookie("userToken");
 
 const handLogout = async () => {
-  userData.value = null;
-  if (import.meta.client) {
-    localStorage.removeItem("tk");
+  userStore.userData = null;
+  userToken.value = null;
+  const noNavigate = ["rooms-roomId-booking"];
+  if (!noNavigate.includes(route.name)) {
+    userStore.successLoginPath = route.fullPath;
+  } else {
+    userStore.successLoginPath = "/";
   }
+  setAuthorization("");
   await navigateTo("/account/login");
 };
 </script>
@@ -74,7 +79,7 @@ const handLogout = async () => {
                 客房旅宿
               </NuxtLink>
             </li>
-            <li v-if="userData" class="d-none d-md-block nav-item">
+            <li v-if="userStore.userData" class="d-none d-md-block nav-item">
               <div class="btn-group">
                 <button
                   type="button"
@@ -82,7 +87,7 @@ const handLogout = async () => {
                   data-bs-toggle="dropdown"
                 >
                   <Icon class="fs-5" name="mdi:account-circle-outline" />
-                  {{ userData.name }}
+                  {{ userStore.userData.name }}
                 </button>
                 <ul
                   class="dropdown-menu py-3 overflow-hidden"
@@ -108,7 +113,7 @@ const handLogout = async () => {
               </div>
             </li>
 
-            <li v-if="userData" class="d-block d-md-none nav-item">
+            <li v-if="userStore.userData" class="d-block d-md-none nav-item">
               <a
                 @click.prevent="userStore.ToProfile"
                 class="nav-link p-4 text-neutral-0"
@@ -116,7 +121,7 @@ const handLogout = async () => {
                 >我的帳戶</a
               >
             </li>
-            <li v-if="userData" class="d-block d-md-none nav-item">
+            <li v-if="userStore.userData" class="d-block d-md-none nav-item">
               <a
                 @click.prevent="handLogout"
                 class="nav-link p-4 text-neutral-0"
@@ -125,7 +130,7 @@ const handLogout = async () => {
               >
             </li>
 
-            <li v-if="!userData" class="nav-item">
+            <li v-if="!userStore.userData" class="nav-item">
               <a
                 @click.prevent="handLogout"
                 class="nav-link p-4 text-neutral-0"
