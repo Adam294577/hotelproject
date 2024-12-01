@@ -1,16 +1,63 @@
 <script setup>
-const router = useRouter();
+// zod
+import { z } from "zod";
+import { validateSchema } from "@/utils/zod/validateSchema";
+// pinia
 const userStore = useUserStore();
-const { userData } = storeToRefs(userStore);
-
+// Login
+const loading = ref(false);
+const config = useRuntimeConfig();
+const { $api } = useNuxtApp();
 const handLogin = async () => {
-  setAuthorization("123");
-  userData.value = { name: "Jessica", userId: "5207" };
-  await navigateTo("/");
+  const { error, data } = validateSchema(LoginSchema, LoginModel.value);
+  if (error) return (LoginError.value = error);
+
+  loading.value = true;
+  const res = await $api("/user/login", {
+    ...config.public.backendOptions,
+    method: "POST",
+    body: data,
+  });
+  if (res.error) {
+    LoginError.value = res.error.message;
+    loading.value = false;
+    return;
+  }
+
+  if (res.data) {
+    userStore.userData = res.data.result;
+    if (userStore.isRemembered) {
+      userStore.RememberedAccount = res.data.result.email;
+    }
+    setAuthorization(res.data.token);
+    navigateTo("/");
+  }
 };
-const toSignup = async () => {
-  await navigateTo("/account/signup");
+const LoginSchema = z.object({
+  email: z.string().email("請輸入有效的電子信箱"),
+  password: z
+    .string()
+    .min(8, "密碼至少需要8位數")
+    .regex(/^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{8,}$/, "密碼必須包含英數混合"),
+});
+const LoginFrom = ref(null);
+const LoginModel = ref({
+  email: "",
+  password: "",
+});
+const LoginError = ref("");
+const clearLoginError = (e) => {
+  if (e.target.nodeName === "INPUT") LoginError.value = "";
 };
+useEventListener(LoginFrom, "input", clearLoginError);
+
+onBeforeMount(() => {
+  if (!userStore.isRemembered) {
+    userStore.RememberedAccount = "";
+  } else {
+    LoginModel.value.email = userStore.RememberedAccount;
+  }
+});
 </script>
 
 <template>
@@ -22,7 +69,7 @@ const toSignup = async () => {
       <h1 class="text-neutral-0 fw-bold">立即開始旅程</h1>
     </div>
 
-    <form class="mb-10">
+    <form class="mb-10" ref="LoginFrom">
       <div class="mb-4 fs-8 fs-md-7">
         <label class="mb-2 text-neutral-0 fw-bold" for="email">
           電子信箱
@@ -30,7 +77,8 @@ const toSignup = async () => {
         <input
           id="email"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
+          v-focus
+          v-model="LoginModel.email"
           placeholder="請輸入信箱"
           type="email"
         />
@@ -40,20 +88,20 @@ const toSignup = async () => {
         <input
           id="password"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
+          v-model="LoginModel.password"
           placeholder="請輸入密碼"
           type="password"
         />
       </div>
       <div
-        class="d-flex justify-content-between align-items-center mb-10 fs-8 fs-md-7"
+        class="d-flex justify-content-between align-items-center mb-10 fs-8 fs-md-7 position-relative"
       >
         <div class="form-check d-flex align-items-end gap-2 text-neutral-0">
           <input
             id="remember"
             class="form-check-input"
             type="checkbox"
-            value=""
+            v-model="userStore.isRemembered"
           />
           <label class="form-check-label fw-bold" for="remember">
             記住帳號
@@ -65,13 +113,20 @@ const toSignup = async () => {
         >
           忘記密碼？
         </button>
+        <div
+          class="position-absolute top-100 fs-7 fw-bold"
+          style="color: #f00; margin-top: 0.3rem"
+        >
+          {{ LoginError }}
+        </div>
       </div>
       <button
         @click="handLogin"
         class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
         type="button"
+        :disabled="loading"
       >
-        會員登入
+        <span>會員登入</span>
       </button>
     </form>
 
