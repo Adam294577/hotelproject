@@ -17,6 +17,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   // navigate
   if (["404NotFound", "index", "rooms"].includes(to.name)) return;
   if (to.name === "account") return navigateTo("/account/login");
+  if (to.name === "rooms-roomId") {
+    userStore.successLoginPath = `/rooms/${to.params.roomId}`;
+  }
   if (to.name.split("-")[0] === "account") return;
   if (!userToken.value) return navigateTo("/account/login");
 });
