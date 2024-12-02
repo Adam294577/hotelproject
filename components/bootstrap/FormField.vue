@@ -13,6 +13,7 @@ const props = defineProps({
     type: String,
     default: "text",
   },
+  // '' / 'is-valid' / 'is-invalid'
   status: {
     type: String,
     default: "",
@@ -59,7 +60,7 @@ const onInput = (event) => {
 </script>
 
 <template>
-  <div :class="wrapperClass">
+  <div v-if="type !== 'checkbox'" :class="wrapperClass">
     <label
       :class="labelClass"
       v-if="type !== 'checkbox'"
@@ -70,7 +71,7 @@ const onInput = (event) => {
     <input
       v-if="['email', 'text', 'password', 'tel'].includes(type)"
       :type="type"
-      class="form-control"
+      class="form-control position-relative"
       :id="id"
       :placeholder="placeholder"
       :class="[inputClass, status]"
@@ -93,20 +94,43 @@ const onInput = (event) => {
       </option>
     </select>
     <div v-if="feedback" class="valid-feedback">{{ feedback }}</div>
-    <div class="invalid-feedback">{{ feedback }}</div>
-    <div v-if="type === 'checkbox'" class="form-check">
-      <input
-        v-if="type === 'checkbox'"
-        class="form-check-input"
-        type="checkbox"
-        :id="id"
-        :class="status"
-        v-model="modelValue"
-        @change="onInput"
-      />
-      <label :for="id" class="form-check-label">{{ label }}</label>
-      <div v-if="feedback" class="valid-feedback">{{ feedback }}</div>
-      <div class="invalid-feedback">{{ feedback }}</div>
+    <div
+      class="invalid-feedback position-absolute d-flex justify-content-end pe-4"
+    >
+      <span class="fs-7 fw-bold" style="color: #f00">
+        {{ feedback }}
+      </span>
+    </div>
+  </div>
+  <div
+    v-if="type === 'checkbox'"
+    class="form-check position-relative"
+    :class="wrapperClass"
+  >
+    <input
+      v-if="type === 'checkbox'"
+      class="form-check-input"
+      type="checkbox"
+      :id="id"
+      :class="status"
+      v-model="modelValue"
+      @change="onInput"
+    />
+    <label
+      :for="id"
+      class="form-check-label"
+      :class="labelClass"
+      :style="status === 'is-invalid' ? 'color: #fff' : ''"
+      >{{ label }}</label
+    >
+
+    <div v-if="feedback" class="valid-feedback">{{ feedback }}</div>
+    <div
+      class="invalid-feedback position-absolute top-100 d-flex justify-content-start mx-2"
+    >
+      <span class="fs-7 fw-bold" style="color: #f00">
+        {{ feedback }}
+      </span>
     </div>
   </div>
 </template>
@@ -130,7 +154,9 @@ input[type="password"] {
   font: small-caption;
   font-size: 1.5rem;
 }
-
+.form-control.is-invalid {
+  background-size: 1.5rem;
+}
 input::placeholder {
   color: #909090;
   font-size: 1rem;

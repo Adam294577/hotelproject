@@ -5,20 +5,26 @@ import { useDateOption } from "@/composables/dateOption";
 import { useAddressOption } from "@/composables/addressOption";
 // zod
 import { z } from "zod";
+import { validateSchema } from "@/utils/zod/validateSchema";
+const config = useRuntimeConfig();
+// 標題
+const signupTitle = computed(() => {
+  return signupStep.value === 3 ? "註冊成功" : "立即註冊";
+});
 
+const signupStep = ref(1);
 const SignupModel = ref({
   // step1
-  email: null,
-  password: null,
-  confirmPassword: null,
+  email: "",
+  password: "",
+  confirmPassword: "",
   // step2
-  name: null,
-  phone: null,
-  birthDate: null,
-  address: null,
-  zip: null,
-  addressDetail: null,
-  Terms: null,
+  name: "",
+  phone: "",
+  address: "",
+  zip: "",
+  addressDetail: "",
+  term: false,
 });
 // 日期處理
 const { yearOpt, monthOpt, dayOpt, updateDayOpt } = useDateOption();
@@ -27,7 +33,13 @@ const birthDate = ref({
   month: monthOpt.value[0],
   day: 1,
 });
-const formatBirthDate = () => {};
+const formatBirthDate = () => {
+  const y = birthDate.value.year;
+  const m = String(birthDate.value.month).padStart(2, "0");
+  const d = String(birthDate.value.day).padStart(2, "0");
+  const formattedDate = `${y}/${m}/${d}`; // 組成 YYYY/mm/dd 格式
+  return formattedDate;
+};
 const ChangeDate = () => {
   updateDayOpt(birthDate.value.month, birthDate.value.year);
   if (birthDate.value.day > dayOpt.value.length) birthDate.value.day = 1;
@@ -41,8 +53,29 @@ const { cityOpt, zoneOpt, updateZoneOpt } = useAddressOption(
   AddressData.value,
   SignupModel.value
 );
+// error handle
+const ClearErrorMsg = (stepRef) => {
+  for (const key in stepRef.value) {
+    stepRef.value[key].status = "";
+    stepRef.value[key].message = "";
+  }
+};
+const InputClearErrorMsg = (e, stepRef) => {
+  if (e.target.nodeName === "INPUT") ClearErrorMsg(stepRef);
+};
+const MapErrorMsg = (errors, stepRef) => {
+  ClearErrorMsg(stepRef);
+  errors.forEach((err) => {
+    const key = err.path[0];
+    if (stepRef.value[key]) {
+      stepRef.value[key].status = "is-invalid";
+      stepRef.value[key].message = err.message;
+    }
+  });
+};
 // 註冊驗證 (step1)
-const isEmailAndPasswordValid = ref(false);
+const Step1form = ref(null);
+useEventListener(Step1form, "input", (e) => InputClearErrorMsg(e, step1Error));
 const Step1Schema = z
   .object({
     email: z.string().email("請輸入有效的電子信箱"),
@@ -50,7 +83,7 @@ const Step1Schema = z
       .string()
       .min(8, "密碼至少需要8位數")
       .regex(/^(?=.*[a-zA-Z])(?=.*\d)[A-Za-z\d]{8,}$/, "密碼必須包含英數混合"),
-    confirmPassword: z.string().min(8, "確認密碼至少需要8位數"),
+    confirmPassword: z.string(),
   })
   .superRefine((data, ctx) => {
     if (data.password !== data.confirmPassword) {
@@ -60,27 +93,95 @@ const Step1Schema = z
       });
     }
   });
-const vaildateStep1 = () => {
+const step1Error = ref({
+  email: { status: "", message: "" },
+  password: { status: "", message: "" },
+  confirmPassword: { status: "", message: "" },
+});
+const isLoading = ref(false);
+const ToStep2 = async () => {
   const step1Data = {
     email: SignupModel.value.email,
     password: SignupModel.value.password,
     confirmPassword: SignupModel.value.confirmPassword,
   };
-  const result = Step1Schema.safeParse(step1Data);
-  if (!result.success) {
-    // 若有錯誤，取出錯誤訊息
-    console.log("驗證失敗：", result.error.format());
-    return result.error.format(); // 可以返回格式化的錯誤訊息
-  } else {
-    console.log("驗證通過！");
-    isEmailAndPasswordValid.value = true;
-    // return null; // 驗證通過則返回 null 或其他適當訊息
+  const { error } = validateSchema(Step1Schema, step1Data, "multError");
+  if (error) {
+    MapErrorMsg(error, step1Error);
+    return;
   }
+  isLoading.value = true;
+  const { data: verifyEmail } = await useFetch("verify/email", {
+    ...config.public.backendOptions,
+    method: "POST",
+    body: { email: SignupModel.value.email },
+  });
+  if (verifyEmail.value.result.isEmailExists) {
+    step1Error.value.email.status = "is-invalid";
+    step1Error.value.email.message = "此信箱已註冊過";
+    isLoading.value = false;
+    return;
+  }
+  isLoading.value = false;
+  signupStep.value = 2;
 };
 // 註冊驗證 (step2)
-const Step2Schema = z.object({});
-const vaildateStep2 = () => {};
-const modelValue = ref(null);
+const Step2form = ref(null);
+useEventListener(Step2form, "input", (e) => InputClearErrorMsg(e, step2Error));
+const Step2Schema = z.object({
+  name: z.string().min(1, { message: "請輸入姓名" }),
+  phone: z
+    .string()
+    .min(1, { message: "請輸入手機號碼" })
+    .regex(/^09\d{8}$/, {
+      message: "請輸入有效的手機號碼",
+    }),
+  addressDetail: z.string().min(1, { message: "請輸入詳細地址" }),
+  term: z.boolean().refine((val) => val === true, {
+    message: "請勾選條款規範",
+  }),
+});
+const step2Error = ref({
+  name: { status: "", message: "" },
+  phone: { status: "", message: "" },
+  addressDetail: { status: "", message: "" },
+  term: { status: "", message: "" },
+});
+const handSignupData = async () => {
+  const step2Data = {
+    name: SignupModel.value.name,
+    phone: SignupModel.value.phone,
+    addressDetail: SignupModel.value.addressDetail,
+    term: SignupModel.value.term,
+  };
+  const { error } = validateSchema(Step2Schema, step2Data, "multError");
+  if (error) {
+    MapErrorMsg(error, step2Error);
+    return;
+  }
+
+  isLoading.value = true;
+  const postBody = {
+    name: SignupModel.value.name,
+    email: SignupModel.value.email,
+    password: SignupModel.value.password,
+    phone: SignupModel.value.phone,
+    birthday: formatBirthDate(),
+    address: {
+      zipcode: SignupModel.value.zip,
+      detail: SignupModel.value.addressDetail,
+    },
+  };
+  const { data: signupData } = await useFetch("user/signup", {
+    ...config.public.backendOptions,
+    method: "POST",
+    body: postBody,
+  });
+  if (signupData.value.status) {
+    isLoading.value = false;
+    signupStep.value = 3;
+  }
+};
 </script>
 <template>
   <div class="p-5 px-md-0 py-md-30" style="min-width: 400px">
@@ -88,17 +189,20 @@ const modelValue = ref(null);
       <p class="mb-2 text-primary-100 fs-8 fs-md-7 fw-bold">
         享樂酒店，誠摯歡迎
       </p>
-      <h1 class="mb-4 text-neutral-0 fw-bold">立即註冊</h1>
+      <h1 class="mb-4 text-neutral-0 fw-bold">{{ signupTitle }}</h1>
 
-      <div class="d-flex align-items-center py-4 gap-2">
+      <div
+        class="d-flex align-items-center py-4 gap-2"
+        :class="{ 'd-none': signupStep === 3 }"
+      >
         <div class="d-flex flex-column align-items-center gap-1 text-neutral-0">
           <span
-            :class="{ 'd-none': isEmailAndPasswordValid }"
+            :class="{ 'd-none': signupStep >= 2 }"
             class="step p-2 bg-primary-100 rounded-circle"
             >1</span
           >
           <Icon
-            :class="{ 'd-none': !isEmailAndPasswordValid }"
+            :class="{ 'd-none': signupStep === 1 }"
             class="p-2 fs-3 bg-primary-100 rounded-circle"
             name="material-symbols:check"
           />
@@ -109,16 +213,15 @@ const modelValue = ref(null);
 
         <div
           :class="{
-            'text-neutral-0': isEmailAndPasswordValid,
-            'text-neutral-60': !isEmailAndPasswordValid,
+            'text-neutral-0': signupStep === 2,
+            'text-neutral-60': signupStep === 1,
           }"
           class="d-flex flex-column align-items-center gap-1"
         >
           <span
             :class="{
-              'bg-primary-100': isEmailAndPasswordValid,
-              'bg-transparent border border-neutral-60':
-                !isEmailAndPasswordValid,
+              'bg-primary-100': signupStep === 2,
+              'bg-transparent border border-neutral-60': signupStep === 1,
             }"
             class="step p-2 rounded-circle"
             >2</span
@@ -129,7 +232,11 @@ const modelValue = ref(null);
     </div>
 
     <div class="mb-4 row">
-      <form :class="{ 'd-none': isEmailAndPasswordValid }" class="mb-4">
+      <form
+        ref="Step1form"
+        :class="{ 'd-none': signupStep !== 1 }"
+        class="mb-4"
+      >
         <FormField
           :id="'email'"
           :label="'電子信箱'"
@@ -138,8 +245,8 @@ const modelValue = ref(null);
           :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
           :type="'email'"
           :placeholder="'hello@exsample.com'"
-          :status="''"
-          :feedback="''"
+          :status="step1Error.email.status"
+          :feedback="step1Error.email.message"
           v-model="SignupModel.email"
         >
         </FormField>
@@ -151,8 +258,8 @@ const modelValue = ref(null);
           :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
           :type="'password'"
           :placeholder="'請輸入密碼'"
-          :status="''"
-          :feedback="''"
+          :status="step1Error.password.status"
+          :feedback="step1Error.password.message"
           v-model="SignupModel.password"
         >
         </FormField>
@@ -164,20 +271,25 @@ const modelValue = ref(null);
           :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
           :type="'password'"
           :placeholder="'請再輸入一次密碼'"
-          :status="''"
-          :feedback="''"
+          :status="step1Error.confirmPassword.status"
+          :feedback="step1Error.confirmPassword.message"
           v-model="SignupModel.confirmPassword"
         >
         </FormField>
         <button
           class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold"
           type="button"
-          @click="vaildateStep1()"
+          @click="ToStep2()"
+          :disabled="isLoading"
         >
           下一步
         </button>
       </form>
-      <form :class="{ 'd-none': !isEmailAndPasswordValid }" class="mb-4">
+      <form
+        ref="Step2form"
+        :class="{ 'd-none': signupStep !== 2 }"
+        class="mb-4"
+      >
         <FormField
           :id="'confirmPassword'"
           :label="'姓名'"
@@ -186,9 +298,9 @@ const modelValue = ref(null);
           :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
           :type="'text'"
           :placeholder="'請輸入姓名'"
-          :status="''"
-          :feedback="''"
-          v-model="modelValue"
+          :status="step2Error.name.status"
+          :feedback="step2Error.name.message"
+          v-model="SignupModel.name"
         >
         </FormField>
         <FormField
@@ -199,9 +311,9 @@ const modelValue = ref(null);
           :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
           :type="'tel'"
           :placeholder="'請輸入手機號碼'"
-          :status="''"
-          :feedback="''"
-          v-model="modelValue"
+          :status="step2Error.phone.status"
+          :feedback="step2Error.phone.message"
+          v-model="SignupModel.phone"
         >
         </FormField>
         <div class="mb-4 fs-8 fs-md-7">
@@ -236,7 +348,7 @@ const modelValue = ref(null);
             </select>
           </div>
         </div>
-        <div class="mb-4 fs-8 fs-md-7">
+        <div class="mb-6 fs-8 fs-md-7">
           <label class="form-label text-neutral-0 fw-bold" for="address">
             地址
           </label>
@@ -264,38 +376,45 @@ const modelValue = ref(null);
                 </option>
               </select>
             </div>
-            <input
-              id="address"
-              type="text"
-              class="form-control p-4 rounded-3"
-              placeholder="請輸入詳細地址"
-            />
+            <FormField
+              :id="'address'"
+              :label="''"
+              :wrapperClass="''"
+              :labelClass="'d-none'"
+              :inputClass="'form-control p-4 rounded-3'"
+              :type="'text'"
+              :placeholder="'請輸入詳細地址'"
+              :status="step2Error.addressDetail.status"
+              :feedback="step2Error.addressDetail.message"
+              v-model="SignupModel.addressDetail"
+            >
+            </FormField>
           </div>
         </div>
-
-        <div
-          class="form-check d-flex align-items-end gap-2 mb-10 text-neutral-0"
+        <FormField
+          :id="'agreementCheck'"
+          :label="'我已閱讀並同意本網站個資使用規範'"
+          :wrapperClass="'d-flex align-items-end gap-2 mb-3  text-neutral-0'"
+          :labelClass="'fw-bold'"
+          :inputClass="'form-check-input'"
+          :type="'checkbox'"
+          :status="step2Error.term.status"
+          :feedback="step2Error.term.message"
+          v-model="SignupModel.term"
         >
-          <input
-            id="agreementCheck"
-            class="form-check-input"
-            type="checkbox"
-            value=""
-          />
-          <label class="form-check-label fw-bold" for="agreementCheck">
-            我已閱讀並同意本網站個資使用規範
-          </label>
-        </div>
+        </FormField>
+
         <button
-          class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
+          class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold mt-5"
           type="button"
+          @click="handSignupData"
         >
           完成註冊
         </button>
       </form>
     </div>
 
-    <p class="mb-0 fs-8 fs-md-7">
+    <p class="mb-0 fs-8 fs-md-7" v-show="signupStep !== 3">
       <span class="me-2 text-neutral-0 fw-medium">已經有會員了嗎？</span>
       <NuxtLink
         to="login"
@@ -304,6 +423,14 @@ const modelValue = ref(null);
         <span>立即登入</span>
       </NuxtLink>
     </p>
+    <button
+      v-show="signupStep === 3"
+      @click="navigateTo('login')"
+      class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
+      type="button"
+    >
+      <span>會員登入</span>
+    </button>
   </div>
 </template>
 
