@@ -22,7 +22,7 @@ const SignupModel = ref({
   name: "",
   phone: "",
   address: "",
-  zip: "",
+  zone: "",
   addressDetail: "",
   term: false,
 });
@@ -133,7 +133,7 @@ const Step2Schema = z.object({
   phone: z
     .string()
     .min(1, { message: "請輸入手機號碼" })
-    .regex(/^09\d{8}$/, {
+    .regex(/^(?:\+886\s?|0)(9\d{2})\s?(\d{3})\s?(\d{3})$/, {
       message: "請輸入有效的手機號碼",
     }),
   addressDetail: z.string().min(1, { message: "請輸入詳細地址" }),
@@ -168,8 +168,10 @@ const handSignupData = async () => {
     phone: SignupModel.value.phone,
     birthday: formatBirthDate(),
     address: {
-      zipcode: SignupModel.value.zip,
-      detail: SignupModel.value.addressDetail,
+      zipcode: SignupModel.value.zone.zip,
+      // 有些縣市的區域代碼會重複而無法辨別 (後端api /user 也無法取得)
+      // 故 detail 改成post完整地址內容
+      detail: `${SignupModel.value.address}${SignupModel.value.zone.area}${SignupModel.value.addressDetail}`,
     },
   };
   const { data: signupData } = await useFetch("user/signup", {
@@ -364,14 +366,10 @@ const handSignupData = async () => {
                 </option>
               </select>
               <select
-                v-model="SignupModel.zip"
+                v-model="SignupModel.zone"
                 class="form-select p-4 text-neutral-80 fw-medium rounded-3"
               >
-                <option
-                  v-for="list in zoneOpt"
-                  :key="list.zip"
-                  :value="list.zip"
-                >
+                <option v-for="list in zoneOpt" :key="list.zip" :value="list">
                   {{ list.area }}
                 </option>
               </select>

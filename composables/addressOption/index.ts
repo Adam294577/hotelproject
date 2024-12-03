@@ -12,7 +12,7 @@ interface ZoneOption {
 export function useAddressOption(
   AddressData: AddressData,
   RefModel: { [key: string]: any },
-  RefKey: [string, string] = ["address", "zip"]
+  RefKey: [string, string] = ["address", "zone"]
 ) {
   const cityOpt = ref<string[]>([]);
   const zoneOpt = ref<ZoneOption[]>([]);
@@ -43,7 +43,7 @@ export function useAddressOption(
     }
 
     // 設定初始的郵遞區號
-    RefModel[RefKey[1]] = zoneOpt.value[0].zip;
+    RefModel[RefKey[1]] = zoneOpt.value[0];
   };
 
   // 初始化地址資料
