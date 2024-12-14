@@ -1,4 +1,6 @@
 <script setup>
+import dayjs from "dayjs";
+
 definePageMeta({
   middleware: "check-room-id",
 });
@@ -10,6 +12,7 @@ const { data: RoomDetail } = await useFetch(`/rooms/${id}`, {
   ...config.public.backendOptions,
   transform: (res) => res.result,
 });
+
 const bookingError = ref("");
 const checkBooking = () => {
   bookingError.value = "";
@@ -20,9 +23,18 @@ const checkBooking = () => {
     bookingError.value = "請選擇入住時間";
   }
 };
-const ToRoomBooking = async (id) => {
+
+const ToRoomBooking = async () => {
   checkBooking();
   if (!bookingError.value) {
+    bookingQuery.value = {
+      roomDetail: RoomDetail.value,
+      days: daysCount.value,
+      roomId: route.params.roomId,
+      checkInDate: dayjs(bookingDate.date.start).format("YYYY/MM/DD"),
+      checkOutDate: dayjs(bookingDate.date.end).format("YYYY/MM/DD"),
+      peopleNum: bookingPeople.value,
+    };
     await navigateTo(`/rooms/${route.params.roomId}/booking`);
   }
 };
@@ -49,7 +61,7 @@ const updateImageUrlList = () => {
     }
   });
   if (_imageUrlList.value.length === 5) {
-    // image dom 載入完畢 才關閉 loading
+    // image url資源 載入完畢 才關閉 loading
     LoadImg(_imageUrlList.value, imageLoading);
   }
 };
@@ -83,14 +95,27 @@ const bookingDate = reactive({
   minDate: new Date(),
   maxDate: new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)),
 });
+
 onMounted(() => {
   updateImageUrlList();
 });
+const introDom = ref(null);
+const scrollToDetail = () => {
+  setTimeout(() => {
+    if (introDom.value) {
+      introDom.value.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, 1000);
+};
+const bookingQuery = ref({});
 </script>
 <template>
   <main
     class="mt-18 mt-md-30 bg-neutral-100"
-    v-if="route.name === 'rooms-roomId'"
+    v-show="route.name === 'rooms-roomId'"
   >
     <section class="p-md-20 bg-primary-10">
       <div
@@ -169,7 +194,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <section class="py-10 py-md-30 bg-primary-10">
+    <section ref="introDom" class="py-10 py-md-30 bg-primary-10">
       <div class="container">
         <div class="row">
           <div class="col-12 col-md-7 d-flex flex-column gap-6 gap-md-20">
@@ -232,10 +257,10 @@ onMounted(() => {
                 房間格局
               </h3>
               <ul
-                class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4 p-6 bg-neutral-0 fs-8 fs-md-7 rounded-3 list-unstyled"
+                class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-4 p-6 bg-neutral-0 fs-8 fs-md-7 rounded-3 list-unstyled mt-2"
               >
                 <li
-                  class="col d-flex align-items-center gap-2"
+                  class="col d-flex align-items-center gap-2 mt-md-0"
                   v-for="list in _layoutInfo"
                   :key="list.title"
                 >
@@ -258,7 +283,7 @@ onMounted(() => {
                 class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-2 p-6 mb-0 bg-neutral-0 fs-8 fs-md-7 rounded-3 list-unstyled"
               >
                 <li
-                  class="col d-flex align-items-center gap-2"
+                  class="col d-flex align-items-center gap-2 mt-md-0"
                   v-for="list in _facilityInfo"
                   :key="list.title"
                 >
@@ -281,7 +306,7 @@ onMounted(() => {
                 class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-2 p-6 mb-0 bg-neutral-0 fs-8 fs-md-7 rounded-3 list-unstyled"
               >
                 <li
-                  class="col d-flex align-items-center gap-2"
+                  class="col d-flex align-items-center gap-2 mt-md-0"
                   v-for="list in _amenityInfo"
                   :key="list.title"
                 >
@@ -496,7 +521,7 @@ onMounted(() => {
       :maxPeople="MAX_BOOKING_PEOPLE"
     />
   </main>
-  <NuxtPage />
+  <NuxtPage @back="scrollToDetail" :query="bookingQuery" />
 </template>
 
 <style lang="scss" scoped>
@@ -556,7 +581,7 @@ input[type="date"] {
 .Skeleton {
   background: linear-gradient(-45deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: loading 3s infinite;
+  animation: loading 1.5s infinite;
   position: relative;
   z-index: 2;
 }
