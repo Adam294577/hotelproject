@@ -8,6 +8,9 @@ const userStore = useUserStore();
 const loading = ref(false);
 const config = useRuntimeConfig();
 const { $api } = useNuxtApp();
+useEventListener(document, "keydown", (e) => {
+  if (e.key === "Enter") handLogin();
+});
 const handLogin = async () => {
   const { error, data } = validateSchema(LoginSchema, LoginModel.value);
   if (error) return (LoginError.value = error);

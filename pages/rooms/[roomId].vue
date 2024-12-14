@@ -295,7 +295,7 @@ onMounted(() => {
                 備品提供
               </h3>
               <ul
-                class="row row-cols-5 g-2 p-6 mb-0 bg-neutral-0 fs-8 fs-md-7 rounded-3 list-unstyled"
+                class="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-2 p-6 mb-0 bg-neutral-0 fs-8 fs-md-7 rounded-3 list-unstyled"
               >
                 <li
                   class="col d-flex align-items-center gap-2"

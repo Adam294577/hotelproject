@@ -13,7 +13,17 @@ const handleScroll = () => {
 useEventListener(document, "scroll", handleScroll);
 // collapse
 const collapseRef = ref(null);
+const menuBtn = ref(null);
 const menuOpen = ref(false);
+const handNavigate = async (val) => {
+  if (route.name === val) {
+    menuBtn.value.click();
+    menuOpen.value = false;
+  }
+  if (val === "user-userId-profile") return userStore.ToProfile();
+  if (val === "rooms") return navigateTo("/rooms");
+};
+
 // user
 const userStore = useUserStore();
 const handLogout = async () => {
@@ -40,6 +50,7 @@ const handLogout = async () => {
           />
         </NuxtLink>
         <button
+          ref="menuBtn"
           class="navbar-toggler collapsed p-2 text-white border-0 shadow-none"
           type="button"
           data-bs-toggle="collapse"
@@ -64,9 +75,12 @@ const handLogout = async () => {
         <div id="navbar" class="collapse navbar-collapse" ref="collapseRef">
           <ul class="navbar-nav gap-4 ms-auto fw-bold">
             <li class="nav-item">
-              <NuxtLink to="/rooms" class="nav-link p-4 text-neutral-0">
-                客房旅宿
-              </NuxtLink>
+              <a
+                @click.prevent="handNavigate('rooms')"
+                class="nav-link p-4 text-neutral-0"
+                href="#"
+                >客房旅宿</a
+              >
             </li>
             <li v-if="userStore.userData" class="d-none d-md-block nav-item">
               <div class="btn-group">
@@ -84,7 +98,7 @@ const handLogout = async () => {
                 >
                   <li>
                     <a
-                      @click.prevent="userStore.ToProfile"
+                      @click.prevent="handNavigate('user-userId-profile')"
                       class="dropdown-item px-6 py-4"
                       href="#"
                       >我的帳戶</a
@@ -104,7 +118,7 @@ const handLogout = async () => {
 
             <li v-if="userStore.userData" class="d-block d-md-none nav-item">
               <a
-                @click.prevent="userStore.ToProfile"
+                @click.prevent="handNavigate('user-userId-profile')"
                 class="nav-link p-4 text-neutral-0"
                 href="#"
                 >我的帳戶</a
@@ -128,12 +142,12 @@ const handLogout = async () => {
               >
             </li>
             <li class="nav-item">
-              <NuxtLink
-                to="/rooms"
+              <a
+                @click.prevent="handNavigate('rooms')"
                 class="btn btn-primary-100 px-8 py-4 text-white fw-bold border-0 rounded-3"
+                href="#"
+                >立即訂房</a
               >
-                立即訂房
-              </NuxtLink>
             </li>
           </ul>
         </div>
