@@ -35,19 +35,23 @@ const _facilityInfo = computed(() => {
 const _layoutInfo = computed(() => {
   return RoomDetail.value?.layoutInfo.filter((i) => i.isProvide) || [];
 });
-const imageLoading = ref(true);
+const imageLoading = ref(false);
 const _imageUrlList = ref([]);
 const updateImageUrlList = () => {
+  if (imageLoading.value) return;
   imageLoading.value = true;
   const data = structuredClone(toRaw(RoomDetail.value.imageUrlList));
   const randomData = data.sort(() => Math.random() - 0.5);
   _imageUrlList.value = [];
   randomData.forEach((img, index) => {
-    if (index < 5) {
+    if (index <= 4) {
       _imageUrlList.value.push(img);
     }
   });
-  imageLoading.value = false;
+  if (_imageUrlList.value.length === 5) {
+    // image dom 載入完畢 才關閉 loading
+    LoadImg(_imageUrlList.value, imageLoading);
+  }
 };
 
 const bookingPeople = ref(1);
@@ -79,9 +83,6 @@ const bookingDate = reactive({
   minDate: new Date(),
   maxDate: new Date(currentDate.setFullYear(currentDate.getFullYear() + 1)),
 });
-onBeforeMount(() => {
-  imageLoading.value = true;
-});
 onMounted(() => {
   updateImageUrlList();
 });
@@ -92,63 +93,49 @@ onMounted(() => {
     v-if="route.name === 'rooms-roomId'"
   >
     <section class="p-md-20 bg-primary-10">
-      <div class="d-none d-md-block position-relative">
-        <div
-          class="d-flex gap-2 rounded-3xl overflow-hidden"
-          style="min-height: 500px"
-        >
+      <div
+        class="d-none d-md-block position-relative w-100"
+        style="height: 570px"
+      >
+        <div class="d-flex gap-2 rounded-3xl overflow-hidden h-100">
           <div style="width: 52.5vw">
             <img
-              v-if="!imageLoading"
-              class="w-100"
+              v-show="!imageLoading"
+              class="w-100 object-fit-cover h-100 position-relative z-1"
               :src="_imageUrlList[0]"
-              alt="roombigPicture"
             />
             <div v-if="imageLoading" class="Skeleton h-100"></div>
           </div>
-          <div
-            class="d-flex flex-wrap gap-md-2"
-            style="width: 42.5vw"
-            v-if="imageLoading"
-          >
-            <div class="d-flex gap-md-2" style="height: 50%; width: 100%">
+          <div class="d-flex flex-wrap gap-md-2" style="width: 42vw">
+            <div
+              v-if="imageLoading"
+              class="d-flex gap-md-2"
+              style="height: 50%; width: 100%"
+            >
               <div class="Skeleton w-100 h-100 rounded-3xl"></div>
               <div class="Skeleton w-100 h-100 rounded-3xl"></div>
             </div>
-            <div class="d-flex gap-md-2" style="height: 50%; width: 100%">
-              <div class="Skeleton w-100 h-100 rounded-3xl"></div>
-              <div class="Skeleton w-100 h-100 rounded-3xl"></div>
+            <div
+              v-if="imageLoading"
+              class="d-flex gap-md-2"
+              style="height: 50%; width: 100%"
+            >
+              <div
+                v-if="imageLoading"
+                class="Skeleton w-100 h-100 rounded-3xl"
+              ></div>
+              <div
+                v-if="imageLoading"
+                class="Skeleton w-100 h-100 rounded-3xl"
+              ></div>
             </div>
-          </div>
-          <div
-            class="d-flex flex-wrap gap-md-2"
-            style="width: 42.5vw"
-            v-if="!imageLoading"
-          >
-            <div class="d-flex gap-md-2">
-              <img
-                class="w-50"
-                :src="_imageUrlList[1]"
-                alt="roomOtherPicture-1"
-              />
-
-              <img
-                class="w-50"
-                :src="_imageUrlList[2]"
-                alt="roomOtherPicture-2"
-              />
+            <div class="d-flex gap-md-2 w-100">
+              <img class="w-50" :src="_imageUrlList[1]" />
+              <img class="w-50" :src="_imageUrlList[2]" />
             </div>
-            <div class="d-flex gap-md-2">
-              <img
-                class="w-50"
-                :src="_imageUrlList[3]"
-                alt="roomOtherPicture-3"
-              />
-              <img
-                class="w-50"
-                :src="_imageUrlList[4]"
-                alt="roomOtherPicture-4"
-              />
+            <div class="d-flex gap-md-2 w-100">
+              <img class="w-50" :src="_imageUrlList[3]" />
+              <img class="w-50" :src="_imageUrlList[4]" />
             </div>
           </div>
         </div>
@@ -156,29 +143,25 @@ onMounted(() => {
           v-show="RoomDetail.imageUrlList.length >= 5"
           @click="updateImageUrlList"
           class="position-absolute btn btn-primary-10 px-8 py-4 me-3 text-primary-100 border-primary-100 fw-bold rounded-3"
-          style="bottom: 40px; right: 40px"
+          style="bottom: 40px; right: 60px; z-index: 2"
           type="button"
         >
           看更多
         </button>
       </div>
-      <div class="d-md-none position-relative">
+      <div class="d-md-none position-relative" style="height: 35vh">
         <img
-          v-if="!imageLoading"
-          class="w-100"
+          v-show="!imageLoading"
+          class="w-100 h-100 object-fit-cover"
           :src="_imageUrlList[0]"
           alt="room-a-1"
         />
-        <div
-          v-if="imageLoading"
-          class="Skeleton w-100"
-          style="height: 275px"
-        ></div>
+        <div v-if="imageLoading" class="Skeleton w-100 h-100"></div>
         <button
           v-show="RoomDetail.imageUrlList.length >= 5"
           @click="updateImageUrlList"
           class="position-absolute btn btn-primary-10 px-8 py-4 text-primary-100 border-primary-100 fw-bold rounded-3"
-          style="bottom: 23px; right: 12px"
+          style="bottom: 23px; right: 12px; z-index: 2"
           type="button"
         >
           看更多
@@ -574,6 +557,8 @@ input[type="date"] {
   background: linear-gradient(-45deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: loading 3s infinite;
+  position: relative;
+  z-index: 2;
 }
 @keyframes loading {
   from {
