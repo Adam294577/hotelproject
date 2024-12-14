@@ -22,7 +22,10 @@ const SignupModel = ref({
   name: "",
   phone: "",
   address: "",
-  zone: "",
+  zone: {
+    zip: "",
+    area: "",
+  },
   addressDetail: "",
   term: false,
 });
@@ -171,7 +174,7 @@ const handSignupData = async () => {
       zipcode: SignupModel.value.zone.zip,
       // 有些縣市的區域代碼會重複而無法辨別 (後端api /user 也無法取得)
       // 故 detail 改成post完整地址內容
-      detail: `${SignupModel.value.address}${SignupModel.value.zone.area}${SignupModel.value.addressDetail}`,
+      detail: `${SignupModel.value.address}-${SignupModel.value.zone.area}-${SignupModel.value.addressDetail}`,
     },
   };
   const { data: signupData } = await useFetch("user/signup", {
@@ -293,7 +296,7 @@ const handSignupData = async () => {
         class="mb-4"
       >
         <FormField
-          :id="'confirmPassword'"
+          :id="'name'"
           :label="'姓名'"
           :wrapperClass="'mb-4 fs-8 fs-md-7'"
           :labelClass="'mb-2 text-neutral-0 fw-bold'"

@@ -2,12 +2,13 @@
 import FormField from "@/components/bootstrap/FormField.vue";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-tw";
+dayjs.locale("zh-tw");
 // composables
 import { useAddressOption } from "@/composables/addressOption";
 // zod
 import { z } from "zod";
 import { validateSchema } from "@/utils/zod/validateSchema";
-dayjs.locale("zh-tw");
+
 const config = useRuntimeConfig();
 const { $api } = useNuxtApp();
 const emits = defineEmits(["back"]);
@@ -147,7 +148,7 @@ const confirmBooking = async () => {
   });
   if (data.status) {
     isLoading.value = false;
-    await navigateTo(`/booking/${data.result.orderUserId}`);
+    await navigateTo(`/booking/${data.result._id}`);
   }
 };
 </script>
@@ -466,7 +467,7 @@ const confirmBooking = async () => {
             >
               <img
                 class="img-fluid rounded-3"
-                src="@/assets/images/room-a-1.png"
+                :src="query.roomDetail.imageUrl"
                 alt="room-a"
               />
 
