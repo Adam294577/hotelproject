@@ -29,6 +29,10 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  maxPeople: {
+    type: Number,
+    default: 1,
+  },
 });
 
 const tempDate = reactive({
@@ -70,18 +74,19 @@ const daysCount = computed(() => {
   return differenceDay;
 });
 
-const MAX_BOOKING_PEOPLE = 10;
+const MAX_BOOKING_PEOPLE = props.maxPeople;
 const bookingPeopleMobile = ref(1);
 
 const isConfirmDateOnMobile = ref(false);
-
+const checkCount = ref(false);
 const confirmDateOnMobile = () => {
+  if (daysCount.value === 0) return (checkCount.value = true);
+  checkCount.value = false;
   isConfirmDateOnMobile.value = true;
 };
 
 const confirmDate = () => {
   const isMobile = mapCurrent({ md: false }, true);
-
   if (isMobile.value) {
     emit("handleDateChange", {
       date: tempDate.date,
@@ -210,6 +215,7 @@ const clearDate = () => {
                 :expanded="expanded"
                 :title-position="titlePosition"
                 class="border-0"
+                @dayclick="checkCount = false"
               />
             </ClientOnly>
           </div>
@@ -217,7 +223,7 @@ const clearDate = () => {
           <div v-else>
             <h6 class="mb-1 text-neutral-100 fw-bold">選擇人數</h6>
             <p className="mb-4 text-neutral-80 fs-8 fw-medium">
-              此房型最多供 4 人居住，不接受寵物入住。
+              此房型最多供 {{ MAX_BOOKING_PEOPLE }} 人居住，不接受寵物入住。
             </p>
 
             <div class="d-flex align-items-center gap-4">
@@ -252,6 +258,18 @@ const clearDate = () => {
               </button>
             </div>
           </div>
+        </div>
+        <div
+          style="
+            font-weight: 600;
+            margin-left: 2.25rem;
+            color: #f00;
+            position: absolute;
+            bottom: 5rem;
+          "
+          v-if="checkCount"
+        >
+          至少入住一晚
         </div>
         <div class="d-none d-md-flex modal-footer p-3 p-md-8 pt-0 border-0">
           <button

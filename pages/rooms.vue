@@ -174,7 +174,9 @@ const ToRoomDetail = async (id) => {
       </div>
     </section>
   </main>
-  <NuxtPage />
+  <div :style="route.name !== 'rooms' ? 'min-height: 100vh;' : ''">
+    <NuxtPage />
+  </div>
   <Myfooter />
 </template>
 
