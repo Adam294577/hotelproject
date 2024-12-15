@@ -1,8 +1,5 @@
 <script setup>
-const router = useRouter();
-const ToRoomDetail = async (id) => {
-  await navigateTo(`/rooms/${id}`);
-};
+const orderData = defineModel("orderData");
 </script>
 <template>
   <div class="row gap-6 gap-md-0">
@@ -13,6 +10,7 @@ const ToRoomDetail = async (id) => {
       >
         <div>
           <p class="mb-2 text-neutral-80 fs-8 fs-md-7 fw-medium">
+            <!-- {{ orderData }} -->
             預訂參考編號： HH2302183151222
           </p>
           <h2 class="mb-0 text-neutral-100 fs-7 fs-md-5 fw-bold">
@@ -212,20 +210,20 @@ const ToRoomDetail = async (id) => {
           <button
             data-bs-toggle="modal"
             data-bs-target="#cancelModal"
-            class="btn btn-outline-primary-100 w-50 py-4 fw-bold"
+            class="btn btn-outline-primary-100 w-100 py-4 fw-bold"
             style="--bs-btn-hover-color: #fff"
             type="button"
           >
             取消預訂
           </button>
-          <a
+          <!-- <a
             href="#"
             @click.prevent="ToRoomDetail('a')"
             class="btn btn-primary-100 text-neutral-0 w-50 py-4 fw-bold"
             type="button"
           >
             查看詳情
-          </a>
+          </a> -->
         </div>
       </div>
     </div>

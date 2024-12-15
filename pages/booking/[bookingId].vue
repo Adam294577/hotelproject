@@ -2,6 +2,7 @@
 import dayjs from "dayjs";
 import "dayjs/locale/zh-tw";
 dayjs.locale("zh-tw");
+const userStore = useUserStore();
 const config = useRuntimeConfig();
 const route = useRoute();
 const { data } = await useFetch(`/orders/${route.params.bookingId}`, {

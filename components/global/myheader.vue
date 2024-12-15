@@ -16,7 +16,8 @@ const collapseRef = ref(null);
 const menuBtn = ref(null);
 const menuOpen = ref(false);
 const handNavigate = async (val) => {
-  if (route.name === val) {
+  const isSmallScreen = window.innerWidth < 768;
+  if (route.name === val && isSmallScreen) {
     menuBtn.value.click();
     menuOpen.value = false;
   }
