@@ -19,10 +19,6 @@ const _facilityInfo = computed(() => {
 //   return data.value.roomId?.layoutInfo.filter((i) => i.isProvide) || [];
 // });
 const discount = 1000;
-const checkIn = dayjs(data.value.checkInDate);
-const checkOut = dayjs(data.value.checkOutDate);
-const dayCount = checkOut.diff(checkIn, "day");
-
 onMounted(() => {
   if (!data.value) navigateTo("/");
 });
@@ -100,7 +96,7 @@ onMounted(() => {
           >
             <div>
               <p class="mb-2 text-neutral-80 fs-8 fs-md-7 fw-medium">
-                <ClientOnly> 預訂參考編號： {{ data.orderUserId }} </ClientOnly>
+                <ClientOnly> 預訂參考編號： {{ data._id }} </ClientOnly>
               </p>
               <h2 class="mb-0 text-neutral-100 fs-7 fs-md-5 fw-bold">
                 即將來的行程
@@ -117,7 +113,12 @@ onMounted(() => {
               <h3
                 class="d-flex align-items-center mb-6 text-neutral-80 fs-8 fs-md-6 fw-bold"
               >
-                <p class="mb-0">{{ data.roomId.name }}，{{ dayCount }} 晚</p>
+                <p class="mb-0">
+                  {{ data.roomId.name }}，{{
+                    CalcDayCount(data.checkOutDate, data.checkInDate)
+                  }}
+                  晚
+                </p>
                 <span
                   class="d-inline-block mx-4 bg-neutral-80"
                   style="width: 1px; height: 18px"
@@ -135,7 +136,13 @@ onMounted(() => {
               </div>
 
               <p class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-bold">
-                {{ formatMoney(data.roomId.price * dayCount - discount) }}
+                {{
+                  formatMoney(
+                    data.roomId.price *
+                      CalcDayCount(data.checkOutDate, data.checkInDate) -
+                      discount
+                  )
+                }}
               </p>
             </section>
 
