@@ -7,6 +7,7 @@ import { useAddressOption } from "@/composables/addressOption";
 import { z } from "zod";
 import { validateSchema } from "@/utils/zod/validateSchema";
 const config = useRuntimeConfig();
+const { $api } = useNuxtApp();
 // 標題
 const signupTitle = computed(() => {
   return signupStep.value === 3 ? "註冊成功" : "立即註冊";
@@ -114,12 +115,12 @@ const ToStep2 = async () => {
     return;
   }
   isLoading.value = true;
-  const { data: verifyEmail } = await useFetch("verify/email", {
+  const verifyEmail = await $api("verify/email", {
     ...config.public.backendOptions,
     method: "POST",
     body: { email: SignupModel.value.email },
   });
-  if (verifyEmail.value.result.isEmailExists) {
+  if (verifyEmail.data.result.isEmailExists) {
     step1Error.value.email.status = "is-invalid";
     step1Error.value.email.message = "此信箱已註冊過";
     isLoading.value = false;
@@ -249,7 +250,7 @@ const handSignupData = async () => {
           :labelClass="'mb-2 text-neutral-0 fw-bold'"
           :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
           :type="'email'"
-          :placeholder="'hello@exsample.com'"
+          :placeholder="'請輸入電子信箱'"
           :status="step1Error.email.status"
           :feedback="step1Error.email.message"
           v-model="SignupModel.email"

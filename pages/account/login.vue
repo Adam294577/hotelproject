@@ -121,9 +121,11 @@ onBeforeMount(() => {
         <button
           class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0"
           type="button"
+          @click="navigateTo('/account/forget')"
         >
           忘記密碼？
         </button>
+
         <div
           class="position-absolute top-100 fs-7 fw-bold"
           style="color: #f00; margin-top: 0.3rem"
