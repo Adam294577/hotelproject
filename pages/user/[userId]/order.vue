@@ -50,7 +50,7 @@ const HistoryData = computed(() => {
     (i) => new Date().getTime() > new Date(i.checkInDate).getTime()
   );
 });
-const hasHistoryOrder = computed(() => HistoryData.value !== 0);
+const hasHistoryOrder = computed(() => HistoryData.value.length !== 0);
 // 歷史清單 - 查看更多
 const HistoryOrderList = ref([]);
 const addTimer = ref(0);
