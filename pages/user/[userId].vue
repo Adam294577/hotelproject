@@ -2,7 +2,7 @@
 const route = useRoute();
 const config = useRuntimeConfig();
 const userStore = useUserStore();
-const { data: orderData } = await useAsyncData(
+const { data: orderData, refresh } = await useAsyncData(
   `${userStore.userData._id}`,
   () =>
     $fetch(`/orders`, {
@@ -17,6 +17,7 @@ const { data: orderData } = await useAsyncData(
   <NuxtPage
     v-if="route.name.split('-').at(-1) === 'order'"
     :orderData="orderData"
+    @refreshData="refresh"
   />
   <NuxtPage v-else />
 </template>
