@@ -9,12 +9,15 @@ const { data: orderData } = await useAsyncData(
       ...config.public.backendOptions,
     }),
   {
-    transform: (res) => res.result,
+    transform: (res) => res.result.filter((i) => i.status !== -1),
   }
 );
 </script>
 <template>
-  <NuxtPage v-if="route.path.startsWith('/order')" :orderData="orderData" />
+  <NuxtPage
+    v-if="route.name.split('-').at(-1) === 'order'"
+    :orderData="orderData"
+  />
   <NuxtPage v-else />
 </template>
 
