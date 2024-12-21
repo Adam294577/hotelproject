@@ -78,13 +78,13 @@ const getCode = async () => {
   });
 
   if (verifyEmail.data.result.isEmailExists) {
+    ReGetCodeTimer.value = 10;
+    resume();
     await $api("verify/generateEmailCode", {
       ...config.public.backendOptions,
       method: "POST",
       body: { email: ForgetModel.value.email },
     });
-    ReGetCodeTimer.value = 10;
-    resume();
     isLoading.value = false;
     return;
   } else {

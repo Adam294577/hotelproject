@@ -31,16 +31,20 @@ const props = defineProps({
     default: "Choose...",
   },
   wrapperClass: {
-    type: String,
+    type: String || Object,
     default: "",
   },
   labelClass: {
-    type: String,
+    type: String || Object,
     default: "",
   },
   inputClass: {
-    type: String,
+    type: String || Object,
     default: "",
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -77,6 +81,7 @@ const onInput = (event) => {
       :class="[inputClass, status]"
       v-model="modelValue"
       @input="onInput"
+      :disabled="props.disabled"
     />
     <select
       v-if="type === 'select'"
@@ -85,6 +90,7 @@ const onInput = (event) => {
       :class="status"
       v-model="modelValue"
       @change="onInput"
+      :disabled="props.disabled"
     >
       <option v-if="false" selected disabled value="">
         {{ placeholder }}
@@ -106,6 +112,7 @@ const onInput = (event) => {
     v-if="type === 'checkbox'"
     class="form-check position-relative"
     :class="wrapperClass"
+    :disabled="props.disabled"
   >
     <input
       v-if="type === 'checkbox'"
@@ -115,6 +122,7 @@ const onInput = (event) => {
       :class="status"
       v-model="modelValue"
       @change="onInput"
+      :disabled="props.disabled"
     />
     <label
       :for="id"

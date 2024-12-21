@@ -29,11 +29,11 @@ onMounted(() => {
           <div
             class="hero-content d-flex flex-column flex-md-row justify-content-center justify-content-md-start align-items-md-center gap-4 gap-md-6 mx-5 my-10 mx-md-0 my-md-0"
           >
-            <img
+            <!-- <img
               class="avatar"
               src="@/assets/images/avatar-6.png"
               alt="avatar"
-            />
+            /> -->
             <h1 class="text-neutral-0 fw-bold">Hello，{{ userData.name }}</h1>
           </div>
         </div>
