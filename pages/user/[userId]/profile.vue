@@ -25,6 +25,7 @@ const EditProfile = () => {
   );
   birthDate.value.day = Number(dayjs(profileData.value.birthday).format("DD"));
   addressModel.value.zone.zip = profileData.value.address.zipcode;
+  addressModel.value.address = profileData.value.address.detail.split("-")[0];
   addressModel.value.zone.area = profileData.value.address.detail.split("-")[1];
   addressModel.value.addressDetail =
     profileData.value.address.detail.split("-")[2];
