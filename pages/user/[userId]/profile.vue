@@ -293,103 +293,109 @@ onMounted(() => {
         class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-6 p-md-10 bg-neutral-0"
       >
         <h2 class="fs-6 fs-md-5 fw-bold">修改密碼</h2>
-        <div class="d-flex flex-column gap-4 gap-md-6">
-          <div class="fs-8 fs-md-7">
-            <p class="mb-2 text-neutral-80 fw-medium">電子信箱</p>
-            <span
-              class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-              >{{ UserModel.email }}</span
-            >
-          </div>
-
-          <div
-            class="d-flex justify-content-between align-items-center"
-            :class="{ 'd-none': isEditPassword }"
-          >
-            <div>
-              <label class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-medium">
-                密碼
-              </label>
-              <input
-                class="form-control pe-none p-0 text-neutral-100 fs-5 fs-md-3 fw-bold border-0"
-                type="password"
-                value="**********"
-              />
+        <ClientOnly>
+          <div class="d-flex flex-column gap-4 gap-md-6">
+            <div class="fs-8 fs-md-7">
+              <p class="mb-2 text-neutral-80 fw-medium">電子信箱</p>
+              <span
+                class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
+                >{{ UserModel.email }}</span
+              >
             </div>
 
-            <button
-              class="flex-shrink-0 text-primary-100 fs-8 fs-md-7 fw-bold text-decoration-underline border-0 bg-transparent"
-              type="button"
-              @click="isEditPassword = !isEditPassword"
+            <div
+              class="d-flex justify-content-between align-items-center"
+              :class="{ 'd-none': isEditPassword }"
             >
-              重設
-            </button>
-          </div>
+              <div>
+                <label class="mb-0 text-neutral-80 fs-8 fs-md-7 fw-medium">
+                  密碼
+                </label>
+                <input
+                  class="form-control pe-none p-0 text-neutral-100 fs-5 fs-md-3 fw-bold border-0"
+                  type="password"
+                  value="**********"
+                />
+              </div>
 
-          <form
-            ref="changedPasswordForm"
-            class="d-flex flex-column gap-4 gap-md-6 position-relative"
-            :class="{ 'd-none': !isEditPassword }"
-          >
-            <FormField
-              :id="'oldPassword'"
-              :label="'舊密碼'"
-              :wrapperClass="''"
-              :labelClass="'form-label fs-8 fs-md-7 fw-bold'"
-              :inputClass="'form-control p-4 fs-7 rounded-3'"
-              :type="'password'"
-              :placeholder="'請輸入舊密碼'"
-              :status="changedPasswordError.oldPassword.status"
-              :feedback="changedPasswordError.oldPassword.message"
-              v-model="changePwdModel.oldPassword"
-              :disabled="PasswordUpdated"
-            >
-            </FormField>
-            <FormField
-              :id="'newPassword'"
-              :label="'新密碼'"
-              :wrapperClass="''"
-              :labelClass="'form-label fs-8 fs-md-7 fw-bold'"
-              :inputClass="'form-control p-4 fs-7 rounded-3'"
-              :type="'password'"
-              :placeholder="'請輸入新密碼'"
-              :status="changedPasswordError.newPassword.status"
-              :feedback="changedPasswordError.newPassword.message"
-              v-model="changePwdModel.newPassword"
-              :disabled="PasswordUpdated"
-            >
-            </FormField>
-            <FormField
-              :id="'confirmPassword'"
-              :label="'確認新密碼'"
-              :wrapperClass="''"
-              :labelClass="'form-label fs-8 fs-md-7 fw-bold'"
-              :inputClass="'form-control p-4 fs-7 rounded-3'"
-              :type="'password'"
-              :placeholder="'請再輸入一次新密碼'"
-              :status="changedPasswordError.confirmPassword.status"
-              :feedback="changedPasswordError.confirmPassword.message"
-              v-model="changePwdModel.confirmPassword"
-              :disabled="PasswordUpdated"
-            >
-            </FormField>
-          </form>
-
-          <div class="d-flex align-items-center gap-3">
-            <button
-              :class="{ 'd-none': !isEditPassword }"
-              class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3"
-              type="button"
-              :disabled="PasswordUpdated || changedPasswordLoading"
-              @click="handChangePwd"
-            >
-              儲存設定
-            </button>
-            <div class="fw-bold" style="color: green" v-show="PasswordUpdated">
-              變更成功!
+              <button
+                class="flex-shrink-0 text-primary-100 fs-8 fs-md-7 fw-bold text-decoration-underline border-0 bg-transparent"
+                type="button"
+                @click="isEditPassword = !isEditPassword"
+              >
+                重設
+              </button>
+            </div>
+            <ClientOnly>
+              <form
+                ref="changedPasswordForm"
+                class="d-flex flex-column gap-4 gap-md-6 position-relative"
+                :class="{ 'd-none': !isEditPassword }"
+              >
+                <FormField
+                  :id="'oldPassword'"
+                  :label="'舊密碼'"
+                  :wrapperClass="''"
+                  :labelClass="'form-label fs-8 fs-md-7 fw-bold'"
+                  :inputClass="'form-control p-4 fs-7 rounded-3'"
+                  :type="'password'"
+                  :placeholder="'請輸入舊密碼'"
+                  :status="changedPasswordError.oldPassword.status"
+                  :feedback="changedPasswordError.oldPassword.message"
+                  v-model="changePwdModel.oldPassword"
+                  :disabled="PasswordUpdated"
+                >
+                </FormField>
+                <FormField
+                  :id="'newPassword'"
+                  :label="'新密碼'"
+                  :wrapperClass="''"
+                  :labelClass="'form-label fs-8 fs-md-7 fw-bold'"
+                  :inputClass="'form-control p-4 fs-7 rounded-3'"
+                  :type="'password'"
+                  :placeholder="'請輸入新密碼'"
+                  :status="changedPasswordError.newPassword.status"
+                  :feedback="changedPasswordError.newPassword.message"
+                  v-model="changePwdModel.newPassword"
+                  :disabled="PasswordUpdated"
+                >
+                </FormField>
+                <FormField
+                  :id="'confirmPassword'"
+                  :label="'確認新密碼'"
+                  :wrapperClass="''"
+                  :labelClass="'form-label fs-8 fs-md-7 fw-bold'"
+                  :inputClass="'form-control p-4 fs-7 rounded-3'"
+                  :type="'password'"
+                  :placeholder="'請再輸入一次新密碼'"
+                  :status="changedPasswordError.confirmPassword.status"
+                  :feedback="changedPasswordError.confirmPassword.message"
+                  v-model="changePwdModel.confirmPassword"
+                  :disabled="PasswordUpdated"
+                >
+                </FormField>
+              </form>
+            </ClientOnly>
+            <div class="d-flex align-items-center gap-3">
+              <button
+                :class="{ 'd-none': !isEditPassword }"
+                class="btn btn-neutral-40 align-self-md-start px-8 py-4 text-neutral-60 rounded-3"
+                type="button"
+                :disabled="PasswordUpdated || changedPasswordLoading"
+                @click="handChangePwd"
+              >
+                儲存設定
+              </button>
+              <div
+                class="fw-bold"
+                style="color: green"
+                v-show="PasswordUpdated"
+              >
+                變更成功!
+              </div>
             </div>
           </div>
-        </div>
+        </ClientOnly>
       </section>
     </div>
 
@@ -398,156 +404,164 @@ onMounted(() => {
         class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-6 p-md-10 bg-neutral-0"
       >
         <h2 class="fs-6 fs-md-5 fw-bold">基本資料</h2>
-        <from
-          ref="UserForm"
-          class="d-flex flex-column gap-4 gap-md-6 position-relative"
-        >
-          <FormField
-            :id="'name'"
-            :label="'姓名'"
-            :wrapperClass="'fs-8 fs-md-7'"
-            :labelClass="{
-              'form-label fw-bold text-neutral-100': isEditProfile,
-              'form-label fw-medium text-neutral-80': !isEditProfile,
-            }"
-            :inputClass="{
-              'pe-none p-0 border-0 fw-bold': !isEditProfile,
-              'p-4 fw-bold': isEditProfile,
-            }"
-            :type="'text'"
-            :placeholder="'請輸入姓名'"
-            :status="UserError.name.status"
-            :feedback="UserError.name.message"
-            v-model="UserModel.name"
-            :disabled="UserUpdated"
+        <ClientOnly>
+          <from
+            ref="UserForm"
+            class="d-flex flex-column gap-4 gap-md-6 position-relative"
           >
-          </FormField>
-          <FormField
-            :id="'phone'"
-            :label="'手機號碼'"
-            :wrapperClass="'fs-8 fs-md-7'"
-            :labelClass="{
-              'form-label fw-bold text-neutral-100': isEditProfile,
-              'form-label fw-medium text-neutral-80': !isEditProfile,
-            }"
-            :inputClass="{
-              'pe-none p-0 border-0 fw-bold': !isEditProfile,
-              'p-4 fw-bold': isEditProfile,
-            }"
-            :type="'tel'"
-            :placeholder="'請輸入手機號碼'"
-            :status="UserError.phone.status"
-            :feedback="UserError.phone.message"
-            v-model="UserModel.phone"
-            :disabled="UserUpdated"
-          >
-          </FormField>
-
-          <div class="fs-8 fs-md-7">
-            <label
-              class="form-label"
-              :class="{
-                'fw-bold text-neutral-100': isEditProfile,
-                'fw-medium text-neutral-80': !isEditProfile,
+            <FormField
+              :id="'name'"
+              :label="'姓名'"
+              :wrapperClass="'fs-8 fs-md-7'"
+              :labelClass="{
+                'form-label fw-bold text-neutral-100': isEditProfile,
+                'form-label fw-medium text-neutral-80': !isEditProfile,
               }"
-              for="birth"
-            >
-              生日
-            </label>
-            <span
-              class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-              :class="{ 'd-none': isEditProfile }"
-              >{{ dayjs(UserModel.birthday).format("YYYY年 MM月 DD日") }}</span
-            >
-            <div class="d-flex gap-2" :class="{ 'd-none': !isEditProfile }">
-              <select
-                @change="ChangeDate"
-                v-model="birthDate.year"
-                id="birth"
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-                :disabled="UserUpdated"
-              >
-                <option v-for="year in yearOpt" :key="year" :value="year">
-                  {{ year }} 年
-                </option>
-              </select>
-              <select
-                @change="ChangeDate"
-                v-model="birthDate.month"
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-                :disabled="UserUpdated"
-              >
-                <option v-for="month in monthOpt" :key="month" :value="month">
-                  {{ month }} 月
-                </option>
-              </select>
-              <select
-                v-model="birthDate.day"
-                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-                :disabled="UserUpdated"
-              >
-                <option v-for="day in dayOpt" :key="day" :value="day">
-                  {{ day }} 日
-                </option>
-              </select>
-            </div>
-          </div>
-
-          <div class="fs-8 fs-md-7">
-            <label
-              class="form-label"
-              :class="{
-                'fw-bold text-neutral-100': isEditProfile,
-                'fw-medium text-neutral-80': !isEditProfile,
+              :inputClass="{
+                'pe-none p-0 border-0 fw-bold': !isEditProfile,
+                'p-4 fw-bold': isEditProfile,
               }"
-              for="address"
+              :type="'text'"
+              :placeholder="'請輸入姓名'"
+              :status="UserError.name.status"
+              :feedback="UserError.name.message"
+              v-model="UserModel.name"
+              :disabled="UserUpdated"
             >
-              地址
-            </label>
-            <span
-              class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
-              :class="{ 'd-none': isEditProfile }"
-              >{{ UserModel?.address.detail.split("-").join("") || "" }}</span
+            </FormField>
+            <FormField
+              :id="'phone'"
+              :label="'手機號碼'"
+              :wrapperClass="'fs-8 fs-md-7'"
+              :labelClass="{
+                'form-label fw-bold text-neutral-100': isEditProfile,
+                'form-label fw-medium text-neutral-80': !isEditProfile,
+              }"
+              :inputClass="{
+                'pe-none p-0 border-0 fw-bold': !isEditProfile,
+                'p-4 fw-bold': isEditProfile,
+              }"
+              :type="'tel'"
+              :placeholder="'請輸入手機號碼'"
+              :status="UserError.phone.status"
+              :feedback="UserError.phone.message"
+              v-model="UserModel.phone"
+              :disabled="UserUpdated"
             >
-            <div :class="{ 'd-none': !isEditProfile }">
-              <div class="d-flex gap-2 mb-2">
+            </FormField>
+
+            <div class="fs-8 fs-md-7">
+              <label
+                class="form-label"
+                :class="{
+                  'fw-bold text-neutral-100': isEditProfile,
+                  'fw-medium text-neutral-80': !isEditProfile,
+                }"
+                for="birth"
+              >
+                生日
+              </label>
+              <span
+                class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
+                :class="{ 'd-none': isEditProfile }"
+                >{{
+                  dayjs(UserModel.birthday).format("YYYY年 MM月 DD日")
+                }}</span
+              >
+              <div class="d-flex gap-2" :class="{ 'd-none': !isEditProfile }">
                 <select
-                  @change="updateZoneOpt"
-                  v-model="addressModel.address"
+                  @change="ChangeDate"
+                  v-model="birthDate.year"
+                  id="birth"
                   class="form-select p-4 text-neutral-80 fw-medium rounded-3"
                   :disabled="UserUpdated"
                 >
-                  <option v-for="list in cityOpt" :key="list" :value="list">
-                    {{ list }}
+                  <option v-for="year in yearOpt" :key="year" :value="year">
+                    {{ year }} 年
                   </option>
                 </select>
                 <select
-                  v-model="addressModel.zone"
+                  @change="ChangeDate"
+                  v-model="birthDate.month"
                   class="form-select p-4 text-neutral-80 fw-medium rounded-3"
                   :disabled="UserUpdated"
                 >
-                  <option v-for="list in zoneOpt" :key="list.zip" :value="list">
-                    {{ list.area }}
+                  <option v-for="month in monthOpt" :key="month" :value="month">
+                    {{ month }} 月
+                  </option>
+                </select>
+                <select
+                  v-model="birthDate.day"
+                  class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                  :disabled="UserUpdated"
+                >
+                  <option v-for="day in dayOpt" :key="day" :value="day">
+                    {{ day }} 日
                   </option>
                 </select>
               </div>
-              <FormField
-                :id="'address'"
-                :label="''"
-                :wrapperClass="''"
-                :labelClass="'d-none'"
-                :inputClass="'form-control p-4 fs-8 fs-md-7 rounded-3'"
-                :type="'text'"
-                :placeholder="'請輸入詳細地址'"
-                :status="UserError.addressDetail.status"
-                :feedback="UserError.addressDetail.message"
-                v-model="addressModel.addressDetail"
-                :disabled="UserUpdated"
-              >
-              </FormField>
             </div>
-          </div>
-        </from>
+
+            <div class="fs-8 fs-md-7">
+              <label
+                class="form-label"
+                :class="{
+                  'fw-bold text-neutral-100': isEditProfile,
+                  'fw-medium text-neutral-80': !isEditProfile,
+                }"
+                for="address"
+              >
+                地址
+              </label>
+              <span
+                class="form-control pe-none p-0 text-neutral-100 fw-bold border-0"
+                :class="{ 'd-none': isEditProfile }"
+                >{{ UserModel?.address.detail.split("-").join("") || "" }}</span
+              >
+              <div :class="{ 'd-none': !isEditProfile }">
+                <div class="d-flex gap-2 mb-2">
+                  <select
+                    @change="updateZoneOpt"
+                    v-model="addressModel.address"
+                    class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                    :disabled="UserUpdated"
+                  >
+                    <option v-for="list in cityOpt" :key="list" :value="list">
+                      {{ list }}
+                    </option>
+                  </select>
+                  <select
+                    v-model="addressModel.zone"
+                    class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                    :disabled="UserUpdated"
+                  >
+                    <option
+                      v-for="list in zoneOpt"
+                      :key="list.zip"
+                      :value="list"
+                    >
+                      {{ list.area }}
+                    </option>
+                  </select>
+                </div>
+                <FormField
+                  :id="'address'"
+                  :label="''"
+                  :wrapperClass="''"
+                  :labelClass="'d-none'"
+                  :inputClass="'form-control p-4 fs-8 fs-md-7 rounded-3'"
+                  :type="'text'"
+                  :placeholder="'請輸入詳細地址'"
+                  :status="UserError.addressDetail.status"
+                  :feedback="UserError.addressDetail.message"
+                  v-model="addressModel.addressDetail"
+                  :disabled="UserUpdated"
+                >
+                </FormField>
+              </div>
+            </div>
+          </from>
+        </ClientOnly>
         <button
           :class="{ 'd-none': isEditProfile }"
           class="btn btn-outline-primary-100 align-self-start px-8 py-4 rounded-3"
