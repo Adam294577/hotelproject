@@ -1,5 +1,12 @@
 <script setup>
 const config = useRuntimeConfig();
+useSeoMeta({
+  description:
+    "高雄 | 豪華住宿之選，我們致力於為您提供無與倫比的奢華體驗與優質服務",
+  ogDescription:
+    "高雄 | 豪華住宿之選，我們致力於為您提供無與倫比的奢華體驗與優質服務",
+  ogImage: "https://i.imgur.com/pEeschA.jpeg",
+});
 const HomeImagesData = ref(null);
 const bannerData = ref([]);
 const NewsData = ref([]);

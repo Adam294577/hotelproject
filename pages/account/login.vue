@@ -79,70 +79,72 @@ onBeforeMount(() => {
       </p>
       <h1 class="text-neutral-0 fw-bold">立即開始旅程</h1>
     </div>
-
-    <form class="mb-10" ref="LoginFrom">
-      <div class="mb-4 fs-8 fs-md-7">
-        <label class="mb-2 text-neutral-0 fw-bold" for="email">
-          電子信箱
-        </label>
-        <input
-          id="email"
-          class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          v-focus
-          v-model="LoginModel.email"
-          placeholder="請輸入信箱"
-          type="email"
-        />
-      </div>
-      <div class="mb-4 fs-8 fs-md-7">
-        <label class="mb-2 text-neutral-0 fw-bold" for="password"> 密碼 </label>
-        <input
-          id="password"
-          class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          v-model="LoginModel.password"
-          placeholder="請輸入密碼"
-          type="password"
-        />
-      </div>
-      <div
-        class="d-flex justify-content-between align-items-center mb-10 fs-8 fs-md-7 position-relative"
-      >
-        <div class="form-check d-flex align-items-end gap-2 text-neutral-0">
-          <input
-            id="remember"
-            class="form-check-input"
-            type="checkbox"
-            v-model="userStore.isRemembered"
-          />
-          <label class="form-check-label fw-bold" for="remember">
-            記住帳號
+    <ClientOnly>
+      <form class="mb-10" ref="LoginFrom">
+        <div class="mb-4 fs-8 fs-md-7">
+          <label class="mb-2 text-neutral-0 fw-bold" for="email">
+            電子信箱
           </label>
+          <input
+            id="email"
+            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
+            v-focus
+            v-model="LoginModel.email"
+            placeholder="請輸入信箱"
+            type="email"
+          />
+        </div>
+        <div class="mb-4 fs-8 fs-md-7">
+          <label class="mb-2 text-neutral-0 fw-bold" for="password">
+            密碼
+          </label>
+          <input
+            id="password"
+            class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
+            v-model="LoginModel.password"
+            placeholder="請輸入密碼"
+            type="password"
+          />
+        </div>
+        <div
+          class="d-flex justify-content-between align-items-center mb-10 fs-8 fs-md-7 position-relative"
+        >
+          <div class="form-check d-flex align-items-end gap-2 text-neutral-0">
+            <input
+              id="remember"
+              class="form-check-input"
+              type="checkbox"
+              v-model="userStore.isRemembered"
+            />
+            <label class="form-check-label fw-bold" for="remember">
+              記住帳號
+            </label>
+          </div>
+          <button
+            class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0"
+            type="button"
+            @click="navigateTo('/account/forget')"
+          >
+            忘記密碼？
+          </button>
+
+          <div
+            class="position-absolute top-100 fs-7 fw-bold"
+            style="color: #f00; margin-top: 0.3rem"
+          >
+            {{ LoginError }}
+          </div>
         </div>
         <button
-          class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0"
+          @click="handLogin"
+          class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
           type="button"
-          @click="navigateTo('/account/forget')"
+          :disabled="loading"
         >
-          忘記密碼？
+          <span>會員登入</span>
         </button>
-
-        <div
-          class="position-absolute top-100 fs-7 fw-bold"
-          style="color: #f00; margin-top: 0.3rem"
-        >
-          {{ LoginError }}
-        </div>
-      </div>
-      <button
-        @click="handLogin"
-        class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
-        type="button"
-        :disabled="loading"
-      >
-        <span>會員登入</span>
-      </button>
-    </form>
-
+      </form>
+    </ClientOnly>
     <p class="mb-0 fs-8 fs-md-7">
       <span class="me-2 text-neutral-0 fw-medium">沒有會員嗎？</span>
       <NuxtLink

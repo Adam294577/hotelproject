@@ -1,4 +1,10 @@
 <script setup>
+useSeoMeta({
+  title: "享樂酒店 - 客房旅宿",
+  description: "各種房型，任您挑選",
+  ogDescription: "各種房型，任您挑選",
+  ogImage: "https://i.imgur.com/pEeschA.jpeg",
+});
 // api data
 const config = useRuntimeConfig();
 const { data: roomsImageData } = await useFetch("/api/getRoomsImages");

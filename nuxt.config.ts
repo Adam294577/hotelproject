@@ -15,6 +15,18 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
+      title: "享樂酒店",
+      meta: [
+        { name: "description", content: "nuxt3開發練習網站" },
+        { property: "og:title", content: "享樂酒店" },
+        {
+          property: "og:description",
+          content: "nuxt3開發練習網站",
+        },
+        { property: "og:image", content: "https://i.imgur.com/WlSlm4M.jpeg" },
+        { property: "og:type", content: "website" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+      ],
       link: [
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         {

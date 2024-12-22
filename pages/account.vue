@@ -1,4 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+useSeoMeta({
+  title: "享樂酒店 - 登入",
+  description: "享樂酒店 | 誠摯歡迎，立即開始旅程",
+  ogDescription: "享樂酒店 | 誠摯歡迎，立即開始旅程",
+  ogImage: "https://i.imgur.com/ClVpPJ3.jpeg",
+});
+</script>
 
 <template>
   <div class="min-vh-100 bg-neutral-120">

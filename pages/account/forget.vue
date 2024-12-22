@@ -167,146 +167,150 @@ const handForgetData = async () => {
 };
 </script>
 <template>
-  <div class="p-5 px-md-0 py-md-30" style="min-width: 400px">
-    <div class="mb-10">
-      <p class="mb-2 text-primary-100 fs-8 fs-md-7 fw-bold">
-        享樂酒店，誠摯歡迎
-      </p>
-      <h1 class="mb-4 text-neutral-0 fw-bold">{{ ForgetTitle }}</h1>
-
-      <div
-        class="d-flex align-items-center py-4 gap-2"
-        :class="{ 'd-none': ForgetStep === 3 || ForgetStep === -1 }"
-      >
-        <div class="d-flex flex-column align-items-center gap-1 text-neutral-0">
-          <span
-            :class="{ 'd-none': ForgetStep >= 2 }"
-            class="step p-2 bg-primary-100 rounded-circle"
-            >1</span
-          >
-          <Icon
-            :class="{ 'd-none': ForgetStep === 1 }"
-            class="p-2 fs-3 bg-primary-100 rounded-circle"
-            name="material-symbols:check"
-          />
-          <p class="mb-0 fs-8 fs-md-7 fw-bold">輸入信箱</p>
-        </div>
-
-        <hr class="flex-grow-1 my-0 border border-neutral-60 opacity-100" />
+  <ClientOnly>
+    <div class="p-5 px-md-0 py-md-30" style="min-width: 400px">
+      <div class="mb-10">
+        <p class="mb-2 text-primary-100 fs-8 fs-md-7 fw-bold">
+          享樂酒店，誠摯歡迎
+        </p>
+        <h1 class="mb-4 text-neutral-0 fw-bold">{{ ForgetTitle }}</h1>
 
         <div
-          :class="{
-            'text-neutral-0': ForgetStep === 2,
-            'text-neutral-60': ForgetStep === 1,
-          }"
-          class="d-flex flex-column align-items-center gap-1"
+          class="d-flex align-items-center py-4 gap-2"
+          :class="{ 'd-none': ForgetStep === 3 || ForgetStep === -1 }"
         >
-          <span
-            :class="{
-              'bg-primary-100': ForgetStep === 2,
-              'bg-transparent border border-neutral-60': ForgetStep === 1,
-            }"
-            class="step p-2 rounded-circle"
-            >2</span
+          <div
+            class="d-flex flex-column align-items-center gap-1 text-neutral-0"
           >
-          <p class="mb-0 fs-8 fs-md-7 fw-bold">輸入新密碼</p>
+            <span
+              :class="{ 'd-none': ForgetStep >= 2 }"
+              class="step p-2 bg-primary-100 rounded-circle"
+              >1</span
+            >
+            <Icon
+              :class="{ 'd-none': ForgetStep === 1 }"
+              class="p-2 fs-3 bg-primary-100 rounded-circle"
+              name="material-symbols:check"
+            />
+            <p class="mb-0 fs-8 fs-md-7 fw-bold">輸入信箱</p>
+          </div>
+
+          <hr class="flex-grow-1 my-0 border border-neutral-60 opacity-100" />
+
+          <div
+            :class="{
+              'text-neutral-0': ForgetStep === 2,
+              'text-neutral-60': ForgetStep === 1,
+            }"
+            class="d-flex flex-column align-items-center gap-1"
+          >
+            <span
+              :class="{
+                'bg-primary-100': ForgetStep === 2,
+                'bg-transparent border border-neutral-60': ForgetStep === 1,
+              }"
+              class="step p-2 rounded-circle"
+              >2</span
+            >
+            <p class="mb-0 fs-8 fs-md-7 fw-bold">輸入新密碼</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="mb-4 row">
-      <form
-        ref="Step1form"
-        :class="{ 'd-none': ForgetStep !== 1 }"
-        class="mb-4"
+      <div class="mb-4 row">
+        <form
+          ref="Step1form"
+          :class="{ 'd-none': ForgetStep !== 1 }"
+          class="mb-4"
+        >
+          <FormField
+            :id="'email'"
+            :label="'電子信箱'"
+            :wrapperClass="'mb-4 fs-8 fs-md-7'"
+            :labelClass="'mb-2 text-neutral-0 fw-bold'"
+            :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+            :type="'email'"
+            :placeholder="'請輸入電子信箱'"
+            :status="step1Error.email.status"
+            :feedback="step1Error.email.message"
+            v-model="ForgetModel.email"
+          >
+          </FormField>
+          <FormField
+            :id="'code'"
+            :label="'驗證碼'"
+            :wrapperClass="'mb-4 fs-8 fs-md-7'"
+            :labelClass="'mb-2 text-neutral-0 fw-bold'"
+            :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40 '"
+            :type="'text'"
+            :placeholder="'請輸入驗證碼'"
+            :status="step1Error.code.status"
+            :feedback="step1Error.code.message"
+            v-model="ForgetModel.code"
+          >
+          </FormField>
+          <button
+            class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold mt-6"
+            type="button"
+            @click="getCode"
+            :disabled="ReGetCodeTimer !== 0"
+          >
+            {{ ReGetCodeTimer === 0 ? "取得驗證碼" : `${ReGetCodeTimer}s` }}
+          </button>
+          <button
+            class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold mt-5"
+            type="button"
+            @click="ToStep2()"
+            :disabled="isLoading"
+          >
+            下一步
+          </button>
+        </form>
+        <form
+          ref="Step2form"
+          :class="{ 'd-none': ForgetStep !== 2 }"
+          class="mb-4"
+        >
+          <FormField
+            :id="'newPassword'"
+            :label="'新密碼'"
+            :wrapperClass="'mb-4 fs-8 fs-md-7'"
+            :labelClass="'mb-2 text-neutral-0 fw-bold'"
+            :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+            :type="'password'"
+            :placeholder="'新密碼'"
+            :status="step2Error.newPassword.status"
+            :feedback="step2Error.newPassword.message"
+            v-model="ForgetModel.newPassword"
+          >
+          </FormField>
+          <button
+            class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold mt-5"
+            type="button"
+            @click="handForgetData"
+          >
+            變更密碼
+          </button>
+        </form>
+      </div>
+      <button
+        v-show="ForgetStep === 3"
+        @click="navigateTo('login')"
+        class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
+        type="button"
       >
-        <FormField
-          :id="'email'"
-          :label="'電子信箱'"
-          :wrapperClass="'mb-4 fs-8 fs-md-7'"
-          :labelClass="'mb-2 text-neutral-0 fw-bold'"
-          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
-          :type="'email'"
-          :placeholder="'請輸入電子信箱'"
-          :status="step1Error.email.status"
-          :feedback="step1Error.email.message"
-          v-model="ForgetModel.email"
-        >
-        </FormField>
-        <FormField
-          :id="'code'"
-          :label="'驗證碼'"
-          :wrapperClass="'mb-4 fs-8 fs-md-7'"
-          :labelClass="'mb-2 text-neutral-0 fw-bold'"
-          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40 '"
-          :type="'text'"
-          :placeholder="'請輸入驗證碼'"
-          :status="step1Error.code.status"
-          :feedback="step1Error.code.message"
-          v-model="ForgetModel.code"
-        >
-        </FormField>
-        <button
-          class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold mt-6"
-          type="button"
-          @click="getCode"
-          :disabled="ReGetCodeTimer !== 0"
-        >
-          {{ ReGetCodeTimer === 0 ? "取得驗證碼" : `${ReGetCodeTimer}s` }}
-        </button>
-        <button
-          class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold mt-5"
-          type="button"
-          @click="ToStep2()"
-          :disabled="isLoading"
-        >
-          下一步
-        </button>
-      </form>
-      <form
-        ref="Step2form"
-        :class="{ 'd-none': ForgetStep !== 2 }"
-        class="mb-4"
+        <span>會員登入</span>
+      </button>
+      <button
+        v-show="ForgetStep === -1"
+        @click="ForgetStep = 1"
+        class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
+        type="button"
       >
-        <FormField
-          :id="'newPassword'"
-          :label="'新密碼'"
-          :wrapperClass="'mb-4 fs-8 fs-md-7'"
-          :labelClass="'mb-2 text-neutral-0 fw-bold'"
-          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
-          :type="'password'"
-          :placeholder="'新密碼'"
-          :status="step2Error.newPassword.status"
-          :feedback="step2Error.newPassword.message"
-          v-model="ForgetModel.newPassword"
-        >
-        </FormField>
-        <button
-          class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold mt-5"
-          type="button"
-          @click="handForgetData"
-        >
-          變更密碼
-        </button>
-      </form>
+        <span>重新輸入</span>
+      </button>
     </div>
-    <button
-      v-show="ForgetStep === 3"
-      @click="navigateTo('login')"
-      class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
-      type="button"
-    >
-      <span>會員登入</span>
-    </button>
-    <button
-      v-show="ForgetStep === -1"
-      @click="ForgetStep = 1"
-      class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
-      type="button"
-    >
-      <span>重新輸入</span>
-    </button>
-  </div>
+  </ClientOnly>
 </template>
 
 <style lang="scss" scoped>

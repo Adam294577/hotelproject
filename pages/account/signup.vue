@@ -236,186 +236,188 @@ const handSignupData = async () => {
         </div>
       </div>
     </div>
-
-    <div class="mb-4 row">
-      <form
-        ref="Step1form"
-        :class="{ 'd-none': signupStep !== 1 }"
-        class="mb-4"
-      >
-        <FormField
-          :id="'email'"
-          :label="'電子信箱'"
-          :wrapperClass="'mb-4 fs-8 fs-md-7'"
-          :labelClass="'mb-2 text-neutral-0 fw-bold'"
-          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
-          :type="'email'"
-          :placeholder="'請輸入電子信箱'"
-          :status="step1Error.email.status"
-          :feedback="step1Error.email.message"
-          v-model="SignupModel.email"
+    <ClientOnly>
+      <div class="mb-4 row">
+        <form
+          ref="Step1form"
+          :class="{ 'd-none': signupStep !== 1 }"
+          class="mb-4"
         >
-        </FormField>
-        <FormField
-          :id="'password'"
-          :label="'密碼'"
-          :wrapperClass="'mb-4 fs-8 fs-md-7'"
-          :labelClass="'mb-2 text-neutral-0 fw-bold'"
-          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
-          :type="'password'"
-          :placeholder="'請輸入密碼'"
-          :status="step1Error.password.status"
-          :feedback="step1Error.password.message"
-          v-model="SignupModel.password"
+          <FormField
+            :id="'email'"
+            :label="'電子信箱'"
+            :wrapperClass="'mb-4 fs-8 fs-md-7'"
+            :labelClass="'mb-2 text-neutral-0 fw-bold'"
+            :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+            :type="'email'"
+            :placeholder="'請輸入電子信箱'"
+            :status="step1Error.email.status"
+            :feedback="step1Error.email.message"
+            v-model="SignupModel.email"
+          >
+          </FormField>
+          <FormField
+            :id="'password'"
+            :label="'密碼'"
+            :wrapperClass="'mb-4 fs-8 fs-md-7'"
+            :labelClass="'mb-2 text-neutral-0 fw-bold'"
+            :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+            :type="'password'"
+            :placeholder="'請輸入密碼'"
+            :status="step1Error.password.status"
+            :feedback="step1Error.password.message"
+            v-model="SignupModel.password"
+          >
+          </FormField>
+          <FormField
+            :id="'confirmPassword'"
+            :label="'確認密碼'"
+            :wrapperClass="'mb-10 fs-8 fs-md-7'"
+            :labelClass="'mb-2 text-neutral-0 fw-bold'"
+            :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+            :type="'password'"
+            :placeholder="'請再輸入一次密碼'"
+            :status="step1Error.confirmPassword.status"
+            :feedback="step1Error.confirmPassword.message"
+            v-model="SignupModel.confirmPassword"
+          >
+          </FormField>
+          <button
+            class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold"
+            type="button"
+            @click="ToStep2()"
+            :disabled="isLoading"
+          >
+            下一步
+          </button>
+        </form>
+        <form
+          ref="Step2form"
+          :class="{ 'd-none': signupStep !== 2 }"
+          class="mb-4"
         >
-        </FormField>
-        <FormField
-          :id="'confirmPassword'"
-          :label="'確認密碼'"
-          :wrapperClass="'mb-10 fs-8 fs-md-7'"
-          :labelClass="'mb-2 text-neutral-0 fw-bold'"
-          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
-          :type="'password'"
-          :placeholder="'請再輸入一次密碼'"
-          :status="step1Error.confirmPassword.status"
-          :feedback="step1Error.confirmPassword.message"
-          v-model="SignupModel.confirmPassword"
-        >
-        </FormField>
-        <button
-          class="btn btn-neutral-40 w-100 py-4 text-neutral-60 fw-bold"
-          type="button"
-          @click="ToStep2()"
-          :disabled="isLoading"
-        >
-          下一步
-        </button>
-      </form>
-      <form
-        ref="Step2form"
-        :class="{ 'd-none': signupStep !== 2 }"
-        class="mb-4"
-      >
-        <FormField
-          :id="'name'"
-          :label="'姓名'"
-          :wrapperClass="'mb-4 fs-8 fs-md-7'"
-          :labelClass="'mb-2 text-neutral-0 fw-bold'"
-          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
-          :type="'text'"
-          :placeholder="'請輸入姓名'"
-          :status="step2Error.name.status"
-          :feedback="step2Error.name.message"
-          v-model="SignupModel.name"
-        >
-        </FormField>
-        <FormField
-          :id="'phone'"
-          :label="'手機號碼'"
-          :wrapperClass="'mb-4 fs-8 fs-md-7'"
-          :labelClass="'mb-2 text-neutral-0 fw-bold'"
-          :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
-          :type="'tel'"
-          :placeholder="'請輸入手機號碼'"
-          :status="step2Error.phone.status"
-          :feedback="step2Error.phone.message"
-          v-model="SignupModel.phone"
-        >
-        </FormField>
-        <div class="mb-4 fs-8 fs-md-7">
-          <label class="mb-2 text-neutral-0 fw-bold" for="birth"> 生日 </label>
-          <div class="d-flex gap-2">
-            <select
-              @change="ChangeDate"
-              v-model="birthDate.year"
-              id="birth"
-              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-            >
-              <option v-for="year in yearOpt" :key="year" :value="year">
-                {{ year }} 年
-              </option>
-            </select>
-            <select
-              @change="ChangeDate"
-              v-model="birthDate.month"
-              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-            >
-              <option v-for="month in monthOpt" :key="month" :value="month">
-                {{ month }} 月
-              </option>
-            </select>
-            <select
-              v-model="birthDate.day"
-              class="form-select p-4 text-neutral-80 fw-medium rounded-3"
-            >
-              <option v-for="day in dayOpt" :key="day" :value="day">
-                {{ day }} 日
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="mb-6 fs-8 fs-md-7">
-          <label class="form-label text-neutral-0 fw-bold" for="address">
-            地址
-          </label>
-          <div>
-            <div class="d-flex gap-2 mb-2">
+          <FormField
+            :id="'name'"
+            :label="'姓名'"
+            :wrapperClass="'mb-4 fs-8 fs-md-7'"
+            :labelClass="'mb-2 text-neutral-0 fw-bold'"
+            :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+            :type="'text'"
+            :placeholder="'請輸入姓名'"
+            :status="step2Error.name.status"
+            :feedback="step2Error.name.message"
+            v-model="SignupModel.name"
+          >
+          </FormField>
+          <FormField
+            :id="'phone'"
+            :label="'手機號碼'"
+            :wrapperClass="'mb-4 fs-8 fs-md-7'"
+            :labelClass="'mb-2 text-neutral-0 fw-bold'"
+            :inputClass="'form-control p-4 text-neutral-100 fw-medium border-neutral-40'"
+            :type="'tel'"
+            :placeholder="'請輸入手機號碼'"
+            :status="step2Error.phone.status"
+            :feedback="step2Error.phone.message"
+            v-model="SignupModel.phone"
+          >
+          </FormField>
+          <div class="mb-4 fs-8 fs-md-7">
+            <label class="mb-2 text-neutral-0 fw-bold" for="birth">
+              生日
+            </label>
+            <div class="d-flex gap-2">
               <select
-                @change="updateZoneOpt"
-                v-model="SignupModel.address"
+                @change="ChangeDate"
+                v-model="birthDate.year"
+                id="birth"
                 class="form-select p-4 text-neutral-80 fw-medium rounded-3"
               >
-                <option v-for="list in cityOpt" :key="list" :value="list">
-                  {{ list }}
+                <option v-for="year in yearOpt" :key="year" :value="year">
+                  {{ year }} 年
                 </option>
               </select>
               <select
-                v-model="SignupModel.zone"
+                @change="ChangeDate"
+                v-model="birthDate.month"
                 class="form-select p-4 text-neutral-80 fw-medium rounded-3"
               >
-                <option v-for="list in zoneOpt" :key="list.zip" :value="list">
-                  {{ list.area }}
+                <option v-for="month in monthOpt" :key="month" :value="month">
+                  {{ month }} 月
+                </option>
+              </select>
+              <select
+                v-model="birthDate.day"
+                class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+              >
+                <option v-for="day in dayOpt" :key="day" :value="day">
+                  {{ day }} 日
                 </option>
               </select>
             </div>
-            <FormField
-              :id="'address'"
-              :label="''"
-              :wrapperClass="''"
-              :labelClass="'d-none'"
-              :inputClass="'form-control p-4 rounded-3'"
-              :type="'text'"
-              :placeholder="'請輸入詳細地址'"
-              :status="step2Error.addressDetail.status"
-              :feedback="step2Error.addressDetail.message"
-              v-model="SignupModel.addressDetail"
-            >
-            </FormField>
           </div>
-        </div>
-        <FormField
-          :id="'agreementCheck'"
-          :label="'我已閱讀並同意本網站個資使用規範'"
-          :wrapperClass="'d-flex align-items-end gap-2 mb-3  text-neutral-0'"
-          :labelClass="'fw-bold'"
-          :inputClass="'form-check-input'"
-          :type="'checkbox'"
-          :status="step2Error.term.status"
-          :feedback="step2Error.term.message"
-          v-model="SignupModel.term"
-        >
-        </FormField>
+          <div class="mb-6 fs-8 fs-md-7">
+            <label class="form-label text-neutral-0 fw-bold" for="address">
+              地址
+            </label>
+            <div>
+              <div class="d-flex gap-2 mb-2">
+                <select
+                  @change="updateZoneOpt"
+                  v-model="SignupModel.address"
+                  class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                >
+                  <option v-for="list in cityOpt" :key="list" :value="list">
+                    {{ list }}
+                  </option>
+                </select>
+                <select
+                  v-model="SignupModel.zone"
+                  class="form-select p-4 text-neutral-80 fw-medium rounded-3"
+                >
+                  <option v-for="list in zoneOpt" :key="list.zip" :value="list">
+                    {{ list.area }}
+                  </option>
+                </select>
+              </div>
+              <FormField
+                :id="'address'"
+                :label="''"
+                :wrapperClass="''"
+                :labelClass="'d-none'"
+                :inputClass="'form-control p-4 rounded-3'"
+                :type="'text'"
+                :placeholder="'請輸入詳細地址'"
+                :status="step2Error.addressDetail.status"
+                :feedback="step2Error.addressDetail.message"
+                v-model="SignupModel.addressDetail"
+              >
+              </FormField>
+            </div>
+          </div>
+          <FormField
+            :id="'agreementCheck'"
+            :label="'我已閱讀並同意本網站個資使用規範'"
+            :wrapperClass="'d-flex align-items-end gap-2 mb-3  text-neutral-0'"
+            :labelClass="'fw-bold'"
+            :inputClass="'form-check-input'"
+            :type="'checkbox'"
+            :status="step2Error.term.status"
+            :feedback="step2Error.term.message"
+            v-model="SignupModel.term"
+          >
+          </FormField>
 
-        <button
-          class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold mt-5"
-          type="button"
-          @click="handSignupData"
-        >
-          完成註冊
-        </button>
-      </form>
-    </div>
-
+          <button
+            class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold mt-5"
+            type="button"
+            @click="handSignupData"
+          >
+            完成註冊
+          </button>
+        </form>
+      </div>
+    </ClientOnly>
     <p class="mb-0 fs-8 fs-md-7" v-show="signupStep !== 3">
       <span class="me-2 text-neutral-0 fw-medium">已經有會員了嗎？</span>
       <NuxtLink
