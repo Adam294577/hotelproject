@@ -8,7 +8,7 @@ https://hotelproject-fz8c5ila7-adam294577s-projects.vercel.app/
 本網站僅作為個人作品練習用
 
 ## backend
-由 [六角旅館 API 系統](https://github.com/hexschool/freyja) 自行部屬
+由六角學院提供 [六角旅館 API 系統](https://github.com/hexschool/freyja)
 
 ## Setup
 node版本: 20
