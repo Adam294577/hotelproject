@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     imgurClientId: process.env.IMGUR_CLIENT_ID,
     public: {
       backendOptions: {
-        baseURL: "https://hotelproject-backend-nnmd.onrender.com/api/v1",
+        baseURL: "https://hotelproject-backend-2.onrender.com/api/v1",
         headers: {
           Authorization: "",
         },
